@@ -1,0 +1,29 @@
+doctype html
+html
+  head
+    title Quản lý người dùng
+    link(rel="stylesheet" href="/static/css/main.css")
+    link(rel="stylesheet" href="/static/css/users.css")
+  body
+    header.navbar
+      div.logo EnglishUp
+      nav
+        a(href='/logout') Đăng xuất
+    hr
+    main
+      h1 Danh sách người dùng
+      p Xin chào #{user.username} (#{user.role})
+
+      // 👉 Chỉ admin mới thấy nút "Thêm người dùng"
+      if user.role === 'admin'
+        a.add-user(href='/create-user') + Thêm người dùng
+
+      ul
+        each u in users
+          li
+            span #{u.fullname} - #{u.username} (#{u.role})
+            // 👉 Chỉ admin mới có quyền sửa hoặc xóa
+            if user.role === 'admin'
+              span.actions
+                a(href=`/update-user/${u._id}`) ✏️ Sửa
+                a(href=`/delete-user/${u._id}`) ❌ Xóa

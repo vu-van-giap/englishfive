@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: #2563eb;
+  color: #fff;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ===== MAIN CONTENT ===== */
+main {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+h1 {
+  color: #2563eb;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+p {
+  text-align: center;
+  color: #334155;
+}
+
+/* ===== USER LIST ===== */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+li {
+  background: #f9fafb;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.2s;
+}
+
+li:hover {
+  background: #eef2ff;
+}
+
+.actions a {
+  margin-left: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.actions a[href*="update-user"] {
+  color: #2563eb;
+}
+
+.actions a[href*="delete-user"] {
+  color: #dc2626;
+}
+
+.actions a:hover {
+  text-decoration: underline;
+}
+
+/* ===== ADD BUTTON ===== */
+.add-user {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+  margin-bottom: 20px;
+}
+
+.add-user:hover {
+  background: #1e40af;
+}
+/* ===== FORM STYLE (Trang tạo người dùng) ===== */
+main {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 35px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+main h1 {
+  color: #2563eb;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+label {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+input:focus,
+select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+
+/* ===== BACK LINK ===== */
+.back {
+  display: inline-block;
+  margin-top: 20px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+/* ===== USER TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 25px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+thead {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+thead th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+  transition: background 0.2s;
+}
+
+tbody tr:hover {
+  background: #f1f5f9;
+}
+
+td {
+  padding: 12px 16px;
+  color: #1e293b;
+  font-size: 15px;
+}
+
+/* ===== ACTION LINKS ===== */
+a.edit, a.delete {
+  text-decoration: none;
+  font-weight: 500;
+  margin-right: 10px;
+  transition: 0.2s;
+}
+
+a.edit {
+  color: #2563eb;
+}
+
+a.delete {
+  color: #dc2626;
+}
+
+a.edit:hover {
+  text-decoration: underline;
+}
+
+a.delete:hover {
+  text-decoration: underline;
+}
+
+/* ===== ADD USER BUTTON ===== */
+.add-user {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+  margin-top: 20px;
+}
+
+.add-user:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+/* ===== NAVBAR (thanh xanh trên cùng) ===== */
+.navbar {
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 40px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo “Mini Blog” bên trái */
+.navbar .logo {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* Các liên kết menu */
+.navbar nav {
+  display: flex;
+  gap: 20px;
+}
+
+.navbar nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.navbar nav a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}

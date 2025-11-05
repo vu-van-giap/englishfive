@@ -1,0 +1,30 @@
+doctype html
+html
+  head
+    title Cập nhật người dùng
+    link(rel="stylesheet" href="/static/css/main.css")
+    link(rel="stylesheet" href="/static/css/users.css")
+  body
+    header.navbar
+      div.logo EnglishUp
+      nav
+        a(href='/posts') Bài viết
+        a(href='/logout') Đăng xuất
+    hr
+    main
+      h1 Cập nhật thông tin người dùng
+      form(action=`/update-user/${user._id}` method="POST" enctype="application/x-www-form-urlencoded")
+        label(for="fullname") Họ tên:
+        input(type="text" name="fullname" value=user.fullname required)
+        br
+        label(for="username") Tên đăng nhập:
+        input(type="text" name="username" value=user.username required)
+        br
+        label(for="role") Vai trò:
+        select(name="role" required)
+          option(value='user') Người dùng
+          option(value='admin') Quản trị viên
+        br
+        button(type="submit") 💾 Lưu thay đổi
+      br
+      a.back(href='/users') ← Quay lại danh sách người dùng

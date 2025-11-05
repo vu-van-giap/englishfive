@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title Thêm bài viết mới
+    link(rel="stylesheet" href="/static/css/main.css")
+    link(rel="stylesheet" href="/static/css/posts.css")
+  body
+    header.navbar
+      div.logo EnglishUp
+      nav
+        a(href='/logout') Đăng xuất
+    hr
+    main
+      h1 Tạo bài viết mới
+      form(action="/posts" method="POST" enctype="multipart/form-data")
+        label Tiêu đề
+        input(type="text" name="title" required)
+        label Nội dung
+        textarea(name="content" rows="5" required)
+        label Ảnh minh họa
+        input(type="file" name="image" accept="image/*")
+        button(type="submit") Đăng bài
+      br
+      a(href='/posts') ← Quay lại danh sách

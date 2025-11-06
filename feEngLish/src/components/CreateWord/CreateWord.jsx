@@ -8,7 +8,7 @@ const CreateWord = () => {
 
           <div>
             <label htmlFor="new_word" className="block font-medium text-gray-700">
-              Thêm từ mới
+              Thêm từ mới.
             </label>
             <input
               id="new_word"

@@ -1,0 +1,92 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+.login-page {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: linear-gradient(135deg, #e0f2fe, #f8fafc);
+  height: 100vh;
+  weight: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container */
+.login-page main {
+  background: #fff;
+  padding: 40px 45px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Header text */
+.login-page header h1 {
+  color: #2563eb;
+  margin-bottom: 5px;
+}
+
+.login-page header h2 {
+  color: #1e40af;
+  margin-bottom: 25px;
+}
+
+/* Form styling */
+.login-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.login-page label {
+  font-weight: 500;
+}
+
+.login-page input[type="text"],
+.login-page input[type="email"],
+.login-page input[type="password"] {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.login-page input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+.login-page button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-page button:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+
+/* Register link */
+.login-page a {
+  display: block;
+  margin-top: 20px;
+  color: #1e40af;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-page a:hover {
+  text-decoration: underline;
+}

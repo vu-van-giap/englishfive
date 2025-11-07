@@ -12,14 +12,14 @@ export default function Header() {
           >
             {/* img */}
             <div class="flex lg:flex-1">
-              <a href="#" class="-m-1.5 p-1.5">
+              <Link to="/" class="-m-1.5 p-1.5">
                 <span class="sr-only">Your Company</span>
                 <img
                   src="../src/img/english FIVE.png"
                   alt=""
                   class="h-8 w-auto"
                 />
-              </a>
+              </Link>
             </div>
             <div class="flex lg:hidden">
               <button

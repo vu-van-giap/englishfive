@@ -9,10 +9,8 @@ export default function Register() {
             <h1>Sign up</h1>
           </header>
           <form action="/register" method="POST">
-            <label for="fullname">Email:</label>
-            <input type="email" name="fullname" required />
-            <label for="fullname">NumberPhone:</label>
-            <input type="number" name="number" required />
+            <label for="fullname">Full name:</label>
+            <input type="text" name="textname" required />
             <br />
             <label for="username">Username:</label>
             <input type="text" name="username" required />

@@ -5,7 +5,8 @@ export default function Header() {
   return (
     <>
       <div class="bg-white">
-        <header class="absolute inset-x-0 top-0 z-50">
+        {/* background header */}
+        <header class="absolute inset-x-0 top-0 z-50 bg-blue-400">
           <nav
             aria-label="Global"
             class="flex items-center justify-between p-6 lg:px-8"
@@ -52,9 +53,12 @@ export default function Header() {
               >
                 Home
               </Link>
-              <a href="#" class="text-sm/6 font-semibold text-gray-900 mr-5 aa">
+              <Link
+                to="/createword"
+                class="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
                 FlashCard
-              </a>
+              </Link>
               <a href="#" class="text-sm/6 font-semibold text-gray-900 mr-5 aa">
                 Quiz
               </a>
@@ -62,13 +66,14 @@ export default function Header() {
                 Audio
               </a>
             </div>
+            {/*  */}
             <div class="hidden lg:flex lg:flex-1 justify-content-center ml-5 ">
-              <a
-                href="#"
+              <Link
+                to="/login"
                 class="text-sm/6 font-semibold text-gray-900 bg-blue-500 border p-1 rounded"
               >
                 Log in
-              </a>
+              </Link>
               <Link
                 to="/register"
                 class="text-sm/6 font-semibold text-gray-900 bg-red-500 border p-1 rounded ml-5"
@@ -124,12 +129,12 @@ export default function Header() {
                         >
                           Home
                         </Link>
-                        <a
-                          href="#"
+                        <Link
+                          to="/createword"
                           class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                         >
                           FlashCard
-                        </a>
+                        </Link>
                         <a
                           href="#"
                           class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
@@ -144,12 +149,12 @@ export default function Header() {
                         </a>
                       </div>
                       <div class="py-6">
-                        <a
-                          href="#"
+                        <Link
+                          to="/login"
                           class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                         >
                           Log in
-                        </a>
+                        </Link>
                         <Link
                           to="/register"
                           class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"

@@ -47,6 +47,7 @@
 
 .login-page input[type="text"],
 .login-page input[type="email"],
+.login-page input[type="number"],
 .login-page input[type="password"] {
   padding: 10px 14px;
   border: 1px solid #cbd5e1;

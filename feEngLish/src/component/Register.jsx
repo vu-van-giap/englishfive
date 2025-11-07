@@ -11,6 +11,8 @@ export default function Register() {
           <form action="/register" method="POST">
             <label for="fullname">Email:</label>
             <input type="email" name="fullname" required />
+            <label for="fullname">NumberPhone:</label>
+            <input type="number" name="number" required />
             <br />
             <label for="username">Username:</label>
             <input type="text" name="username" required />

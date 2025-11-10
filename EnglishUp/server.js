@@ -5,6 +5,8 @@ const fastifyCors = require('@fastify/cors');
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const wordRoutes = require('./routes/words');
+const progressRoutes = require('./routes/progress');
 
 // Plugins cần thiết
 fastify.register(fastifyCors, { origin: '*' }); // Cho phép frontend gọi API
@@ -17,9 +19,11 @@ fastify.register(require('@fastify/mongodb'), {
   forceClose: true,
 });
 
-// 🔹 Đăng ký routes API
-fastify.register(authRoutes, { prefix: '/api/auth' });
-fastify.register(userRoutes, { prefix: '/api/users' });
+// Đăng ký routes
+fastify.register(authRoutes, { prefix: '/auth' });
+fastify.register(userRoutes, { prefix: '/users' });
+fastify.register(wordRoutes, { prefix: '/words' });
+fastify.register(progressRoutes, { prefix: '/progress' });
 
 // 🔹 Khởi động server
 const start = async () => {

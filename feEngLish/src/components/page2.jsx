@@ -7,7 +7,7 @@ const people = [
   {
     name: "Vu Van Giap",
     role: "Co-Founder / CTO",
-    imageUrl: "/src/img/kien.webp",
+    imageUrl: "/src/img/giap.webp",
   },
   {
     name: "Tran Van Dung",

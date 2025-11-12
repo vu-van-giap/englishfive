@@ -1,6 +1,5 @@
 const fastify = require('fastify')({ logger: true });
 const path = require('node:path');
-const fastifyCors = require('@fastify/cors');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -8,8 +7,13 @@ const userRoutes = require('./routes/users');
 const wordRoutes = require('./routes/words');
 const progressRoutes = require('./routes/progress');
 
+// Đăng ký plugin để phục vụ tệp tĩnh
+fastify.register(require('@fastify/static'), {
+  root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
+  prefix: '/', // Phục vụ từ root
+});
+
 // Plugins cần thiết
-fastify.register(fastifyCors, { origin: '*' }); // Cho phép frontend gọi API
 fastify.register(require('@fastify/formbody'));
 fastify.register(require('@fastify/multipart'), {
   limits: { fileSize: 5 * 1024 * 1024 } // giới hạn 5MB
@@ -18,12 +22,19 @@ fastify.register(require('@fastify/mongodb'), {
   url: 'mongodb://localhost:27017/EnglishUp',
   forceClose: true,
 });
+// Cấu hình CORS để cho phép frontend truy cập API
+fastify.register(require('@fastify/cors'), {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+});
+
 
 // Đăng ký routes
 fastify.register(authRoutes, { prefix: '/auth' });
 fastify.register(userRoutes, { prefix: '/users' });
 fastify.register(wordRoutes, { prefix: '/words' });
 fastify.register(progressRoutes, { prefix: '/progress' });
+fastify.register(require('./routes/quiz'), { prefix: '/api' });
 
 // 🔹 Khởi động server
 const start = async () => {

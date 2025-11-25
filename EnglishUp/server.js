@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const wordRoutes = require('./routes/words');
 const progressRoutes = require('./routes/progress');
+const quizRoutes = require('./routes/quizs');
 
 // Đăng ký plugin để phục vụ tệp tĩnh
 fastify.register(require('@fastify/static'), {
@@ -34,7 +35,7 @@ fastify.register(authRoutes, { prefix: '/auth' });
 fastify.register(userRoutes, { prefix: '/users' });
 fastify.register(wordRoutes, { prefix: '/words' });
 fastify.register(progressRoutes, { prefix: '/progress' });
-fastify.register(require('./routes/quiz'), { prefix: '/api' });
+fastify.register(quizRoutes, { prefix: '/quizs' });
 
 // 🔹 Khởi động server
 const start = async () => {

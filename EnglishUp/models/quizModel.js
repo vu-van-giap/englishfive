@@ -12,7 +12,7 @@ async function quizModel(fastify) {
     throw new FastifyError('quizModel: fastify.mongo chưa được khởi tạo. Hãy register fastify-mongodb trước khi register routes.');
   }
 
-  const collection = fastify.mongo.db.collection('quizs');
+  const collection = fastify.mongo.db.collection('quiz');
 
   // Tạo index để tối ưu query sort theo createdAt
   await collection.createIndex({ createdAt: -1 });
@@ -109,14 +109,20 @@ async function quizModel(fastify) {
         if (!data || typeof data !== 'object') throw new FastifyError('Dữ liệu cập nhật không hợp lệ.');
 
         // Validate nếu data có prompt/options/answer
-        let validatedData = {};
-        if (data.prompt || data.options || data.answer) {
-          validatedData = validateQuestionData({
-            prompt: data.prompt || '',
-            options: data.options || [],
-            answer: data.answer || '',
-          });
-        }
+     let validatedData = {};
+      if (data.prompt !== undefined || data.options !== undefined || data.answer !== undefined) {
+        // Lấy dữ liệu hiện tại để fill những field không được gửi lên
+        const current = await collection.findOne({ _id: new ObjectId(id) });
+        if (!current) throw new AppError('Không tìm thấy câu hỏi.', 404);
+
+        const toValidate = {
+          prompt: data.prompt !== undefined ? data.prompt : current.prompt,
+          options: data.options !== undefined ? data.options : current.options,
+          answer: data.answer !== undefined ? data.answer : current.answer,
+        };
+
+        validatedData = validateQuestionData(toValidate);
+    }
 
         const updateData = { ...data, ...validatedData, updatedAt: new Date() };
 

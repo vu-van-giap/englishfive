@@ -1,140 +1,177 @@
-// routes/quiz.js
+// routes/quizs.js
+const { FastifyError } = require('fastify');
 const quizModel = require('../models/quizModel');
 
-
+/**
+ * Plugin Fastify cho routes của quiz
+ * @param {FastifyInstance} fastify - Đối tượng Fastify
+ * @param {Object} options - Tùy chọn plugin
+ */
 async function quizRoutes(fastify, options) {
-  // Tạo instance model (sử dụng fastify đã được truyền vào)
-  let Quiz;
-  try {
-    Quiz = await quizModel(fastify);
-  } catch (err) {
-    // Nếu không thể tạo model (ví dụ fastify.mongo chưa register), ghi log và
-    // throw để Fastify biết plugin này không thể khởi tạo.
-    fastify.log.error('Cannot initialize Quiz model:', err);
-    throw err;
-  }
+  // Khởi tạo Quiz model từ factory
+  const Quiz = await quizModel(fastify);
 
-  // Schema cho validation
-  const questionBodySchema = {
-    type: 'object',
-    required: ['prompt', 'options', 'answer'],
-    properties: {
-      prompt: { type: 'string', minLength: 1 },
-      options: { type: 'array', minItems: 2, items: { type: 'string', minLength: 1 } },
-      answer: { type: 'string', minLength: 1 },
-    },
+  // Schema cho validation (sử dụng Fastify's JSON Schema)
+  const createQuestionSchema = {
+    body: {
+      type: 'object',
+      required: ['prompt', 'options', 'answer'],
+      properties: {
+        prompt: { type: 'string', minLength: 1 },
+        options: { 
+          type: 'array', 
+          minItems: 2, 
+          items: { type: 'string', minLength: 1 },
+          uniqueItems: true
+        },
+        answer: { type: 'string', minLength: 1 }
+      }
+    }
   };
 
-  const idParamSchema = {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'string', pattern: '^[a-fA-F0-9]{24}$', description: 'MongoDB ObjectId' },
+  const updateQuestionSchema = {
+    body: {
+      type: 'object',
+      properties: {
+        prompt: { type: 'string', minLength: 1 },
+        options: { 
+          type: 'array', 
+          minItems: 2, 
+          items: { type: 'string', minLength: 1 },
+          uniqueItems: true
+        },
+        answer: { type: 'string', minLength: 1 }
+      },
+      additionalProperties: false
     },
+    params: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' } // MongoDB ObjectId pattern
+      }
+    }
   };
 
-  const paginationQuerySchema = {
-    type: 'object',
-    properties: {
-      limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-      offset: { type: 'integer', minimum: 0, default: 0 },
-    },
+  const getQuestionByIdSchema = {
+    params: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
+      }
+    }
   };
 
-  // Hàm helper để chuẩn hóa response
-  function sendResponse(rep, success, message, data = null, status = 200) {
-    return rep.code(status).send({ success, message, ...(data && { data }) });
-  }
-
-  // Hàm helper để handle error và set status code
-  function handleError(rep, err) {
-    let status = 500;
-    let message = 'Internal server error';
-    if (err.message) {
-      if (err.message.includes('không hợp lệ')) status = 400;
-      else if (err.message.includes('không tìm thấy')) status = 404;
-      message = err.message;
+  const deleteQuestionSchema = {
+    params: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
+      }
     }
-    fastify.log.error('Route error:', err);
-    return sendResponse(rep, false, message, null, status);
-  }
+  };
 
-  // GET /         => Lấy tất cả câu hỏi (với pagination)
-  fastify.get('/', {
-    schema: {
-      querystring: paginationQuerySchema,
-    },
-  }, async (req, rep) => {
-    try {
-      const { limit = 10, offset = 0 } = req.query;
-      // Giả sử model hỗ trợ pagination (cần sửa model nếu chưa)
-      const questions = await Quiz.getAllQuestions(limit, offset); // Thêm params vào model nếu cần
-      return sendResponse(rep, true, 'Questions retrieved', { questions, limit, offset });
-    } catch (err) {
-      return handleError(rep, err);
-    }
-  });
-
-  // GET /:id      => Lấy câu hỏi theo ID
-  fastify.get('/:id', {
-    schema: {
-      params: idParamSchema,
-    },
-  }, async (req, rep) => {
-    try {
-      const question = await Quiz.getQuestionById(req.params.id);
-      return sendResponse(rep, true, 'Question retrieved', { question });
-    } catch (err) {
-      return handleError(rep, err);
-    }
-  });
-
-  // POST /        => Tạo câu hỏi mới
+  // Route: Tạo câu hỏi mới
   fastify.post('/', {
-    schema: {
-      body: questionBodySchema,
-    },
-  }, async (req, rep) => {
+    schema: createQuestionSchema,
+    preHandler: async (request, reply) => {
+      // Có thể thêm middleware xác thực người dùng nếu cần (e.g., JWT)
+      // Ví dụ: await request.jwtVerify();
+    }
+  }, async (request, reply) => {
     try {
-      const id = await Quiz.createQuestion(req.body);
-      return sendResponse(rep, true, 'Question created', { id }, 201);
-    } catch (err) {
-      return handleError(rep, err);
+      const { prompt, options, answer } = request.body;
+      const id = await Quiz.createQuestion({ prompt, options, answer });
+      reply.code(201).send({ success: true, id, message: 'Câu hỏi đã được tạo thành công.' });
+    } catch (error) {
+      fastify.log.error('Lỗi khi tạo câu hỏi:', error);
+      if (error instanceof FastifyError) {
+        reply.code(400).send({ success: false, message: error.message });
+      } else {
+        reply.code(500).send({ success: false, message: 'Lỗi máy chủ nội bộ.' });
+      }
     }
   });
 
-  // PUT /:id      => Cập nhật quiz
+  // Route: Lấy tất cả câu hỏi
+  fastify.get('/', async (request, reply) => {
+    try {
+      const questions = await Quiz.getAllQuestions();
+      reply.send({ success: true, data: questions });
+    } catch (error) {
+      fastify.log.error('Lỗi khi lấy danh sách câu hỏi:', error);
+      reply.code(500).send({ success: false, message: 'Lỗi máy chủ nội bộ.' });
+    }
+  });
+
+  // Route: Lấy câu hỏi theo ID
+  fastify.get('/:id', {
+    schema: getQuestionByIdSchema
+  }, async (request, reply) => {
+    try {
+      const { id } = request.params;
+      const question = await Quiz.getQuestionById(id);
+      reply.send({ success: true, data: question });
+    } catch (error) {
+      fastify.log.error(`Lỗi khi lấy câu hỏi với ID ${request.params.id}:`, error);
+      if (error instanceof FastifyError) {
+        reply.code(404).send({ success: false, message: error.message });
+      } else {
+        reply.code(500).send({ success: false, message: 'Lỗi máy chủ nội bộ.' });
+      }
+    }
+  });
+
+  // Route: Cập nhật câu hỏi
   fastify.put('/:id', {
-    schema: {
-      params: idParamSchema,
-      body: questionBodySchema, // Partial update, nhưng schema yêu cầu full – có thể làm optional nếu cần
-    },
-  }, async (req, rep) => {
+    schema: updateQuestionSchema,
+    preHandler: async (request, reply) => {
+      // Middleware xác thực người dùng nếu cần
+    }
+  }, async (request, reply) => {
     try {
-      const success = await Quiz.updateQuestion(req.params.id, req.body);
-      if (!success) {
-        return sendResponse(rep, false, 'Question not found or no changes made', null, 404);
+      const { id } = request.params;
+      const updateData = request.body;
+      const success = await Quiz.updateQuestion(id, updateData);
+      if (success) {
+        reply.send({ success: true, message: 'Câu hỏi đã được cập nhật thành công.' });
+      } else {
+        reply.code(404).send({ success: false, message: 'Không tìm thấy câu hỏi để cập nhật.' });
       }
-      return sendResponse(rep, true, 'Question updated');
-    } catch (err) {
-      return handleError(rep, err);
+    } catch (error) {
+      fastify.log.error(`Lỗi khi cập nhật câu hỏi với ID ${request.params.id}:`, error);
+      if (error instanceof FastifyError) {
+        reply.code(400).send({ success: false, message: error.message });
+      } else {
+        reply.code(500).send({ success: false, message: 'Lỗi máy chủ nội bộ.' });
+      }
     }
   });
 
-  // DELETE /:id   => Xóa quiz
+  // Route: Xóa câu hỏi
   fastify.delete('/:id', {
-    schema: {
-      params: idParamSchema,
-    },
-  }, async (req, rep) => {
+    schema: deleteQuestionSchema,
+    preHandler: async (request, reply) => {
+      // Middleware xác thực người dùng nếu cần
+    }
+  }, async (request, reply) => {
     try {
-      const success = await Quiz.deleteQuestion(req.params.id);
-      if (!success) {
-        return sendResponse(rep, false, 'Question not found', null, 404);
+      const { id } = request.params;
+      const success = await Quiz.deleteQuestion(id);
+      if (success) {
+        reply.send({ success: true, message: 'Câu hỏi đã được xóa thành công.' });
+      } else {
+        reply.code(404).send({ success: false, message: 'Không tìm thấy câu hỏi để xóa.' });
       }
-      return sendResponse(rep, true, 'Question deleted');
-    } catch (err) {
-      return handleError(rep, err);
+    } catch (error) {
+      fastify.log.error(`Lỗi khi xóa câu hỏi với ID ${request.params.id}:`, error);
+      if (error instanceof FastifyError) {
+        reply.code(400).send({ success: false, message: error.message });
+      } else {
+        reply.code(500).send({ success: false, message: 'Lỗi máy chủ nội bộ.' });
+      }
     }
   });
 }

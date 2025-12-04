@@ -1,4 +1,7 @@
 import Logo2 from "../img/trangtri.png";
+import Page1 from "./page1";
+import Page2 from "./page2";
+import Page3 from "./page3";
 export default function Content() {
   return (
     <>
@@ -28,6 +31,9 @@ export default function Content() {
           />
         </div>
       </main>
+      <Page1></Page1>
+      <Page2></Page2>
+      <Page3></Page3>
     </>
   );
 }

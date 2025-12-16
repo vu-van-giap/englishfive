@@ -18,6 +18,7 @@ async function vocabRoutes(fastify, options) {
   // POST /vocab: Tạo vocab mới
   fastify.post('/', async (req, rep) => {
     try {
+      // fastify.log('Request body:', req.body);
       const id = await Vocab.createVocab(req.body);
       return rep.code(201).send({ message: 'Created', id });
     } catch (err) {
@@ -55,6 +56,25 @@ async function vocabRoutes(fastify, options) {
       const limit = parseInt(req.query.limit, 10) || 20;
       const res = await Vocab.searchVocabs({ q, page, limit });
       return rep.send(res);
+    } catch (err) {
+      const code = err.statusCode || 500;
+      return rep.code(code).send({
+        statusCode: code,
+        error: code === 500 ? 'Internal Server Error' : 'Bad Request',
+        message: err.message
+      });
+    }
+  });
+
+    // GET /vocab/topic/:topic: Lấy vocab theo topic (thêm mới)
+  fastify.get('/topic/:topic', async (req, rep) => {
+    try {
+      const topic = req.params.topic;
+      if (!topic) {
+        return rep.code(400).send({ message: 'Topic is required' });
+      }
+      const items = await Vocab.getVocabsByTopic(topic);
+      return rep.send({ items });
     } catch (err) {
       const code = err.statusCode || 500;
       return rep.code(code).send({

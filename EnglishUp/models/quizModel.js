@@ -16,65 +16,109 @@ async function quizModel(fastify) {
 
   // Tạo index để tối ưu query sort theo createdAt
   await collection.createIndex({ createdAt: -1 });
-
+  await collection.createIndex({ topic: 1 });
+ 
   // Hàm validation tái sử dụng
-  function validateQuestionData({ prompt, options, answer }) {
+  function validateQuestion({ prompt, choices, vocabRef }) {
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       throw new FastifyError('Prompt không hợp lệ: phải là chuỗi không rỗng.');
     }
-    if (!Array.isArray(options) || options.length < 2) {
-      throw new FastifyError('Options không hợp lệ: phải là mảng với ít nhất 2 phần tử.');
+    if (!Array.isArray(choices) || choices.length < 1) {
+      throw new FastifyError('Choices không hợp lệ: phải là mảng với ít nhất 1 phần tử.');
     }
-    const trimmedOptions = options.map(opt => String(opt).trim()).filter(opt => opt.length > 0);
-    if (trimmedOptions.length < 2 || new Set(trimmedOptions).size !== trimmedOptions.length) {
-      throw new FastifyError('Options không hợp lệ: phải có ít nhất 2 phần tử không rỗng và không trùng lặp.');
+    const validChoices = choices.map(choice => {
+      if (!choice.text || typeof choice.text !== 'string' || choice.text.trim().length === 0) {
+        throw new FastifyError('Choice text không hợp lệ: phải là chuỗi không rỗng.');
+      }
+       return { 
+        text: choice.text.trim(),
+        isCorrect: Boolean(choice.isCorrect) // Đảm bảo boolean
+      }; 
+    });
+    // Kiểm tra đúng 1 choice có is isCorrect: true
+    const correctCount = validChoices.filter(c => c.isCorrect).length;
+    if (correctCount !== 1) {
+      throw new FastifyError('Choices không hợp lệ: phải có đúng 1 choice đúng (isCorrect: true).');
     }
-    if (!answer || typeof answer !== 'string' || answer.trim().length === 0) {
-      throw new FastifyError('Answer không hợp lệ: phải là chuỗi không rỗng.');
+    //vocabRef optional, nhưng nếu có thì phải là ObjectId hợp lệ
+    let validVocabRef = null;
+    if (vocabRef) {
+      if (!ObjectId.isValid(vocabRef)) {
+        throw new FastifyError('vocabRef không hợp lệ: phải là ObjectId hợp lệ.');
+      }
+      validVocabRef = new ObjectId(vocabRef);
     }
-    const trimmedAnswer = answer.trim();
-    if (!trimmedOptions.includes(trimmedAnswer)) {
-      throw new FastifyError('Answer không hợp lệ: phải có trong options.');
+    return { prompt: prompt.trim(), choices: validChoices, vocabRef: validVocabRef };
+  }
+
+  //Hàm validation cho toàn bộ quiz
+function validateQuizData({ title, topic, questions, totalScore, createdBy, finishedAt }) {
+    if (title && (typeof title !== 'string' || title.trim().length === 0)) {
+      throw new FastifyError('Title không hợp lệ: phải là chuỗi không rỗng.');
     }
-    return { prompt: prompt.trim(), options: trimmedOptions, answer: trimmedAnswer };
+    if (topic && (typeof topic !== 'string' || topic.trim().length === 0)) {
+      throw new FastifyError('Topic không hợp lệ: phải là chuỗi không rỗng.');
+    }
+    if (!Array.isArray(questions) || questions.length === 0) {
+      throw new FastifyError('Questions không hợp lệ: phải là mảng không rỗng.');
+    }
+    const validQuestions = questions.map(q => validateQuestion(q));
+    if (totalScore !== undefined && (typeof totalScore !== 'number' || totalScore < 0)) {
+      throw new FastifyError('TotalScore không hợp lệ: phải là số >= 0.');
+    }
+    if (createdBy && typeof createdBy !== 'string') {
+      throw new FastifyError('CreatedBy không hợp lệ: phải là chuỗi.');
+    }
+    if (finishedAt && !(finishedAt instanceof Date)) {
+      throw new FastifyError('FinishedAt không hợp lệ: phải là Date.');
+    }
+    return {
+      title: title ? title.trim() : 'Quiz',
+      topic: topic ? topic.trim() : undefined,
+      questions: validQuestions,
+      totalScore: totalScore || 0,
+      createdBy: createdBy || undefined,
+      finishedAt: finishedAt || undefined
+    };
   }
 
   return {
     /**
      * Tạo câu hỏi mới
-     * @param {Object} data - { prompt, options, answer }
+     * @param {Object} data - {title, topic, question:[{prompt, choices: [{text, isCorrect}], vocabRef}], totalScore, creatdBy, finishedAt}
      * @returns {string} ID của câu hỏi mới
      */
-    async createQuestion({ prompt, options, answer }) {
+    async createQuiz(data) {
       try {
-        const validatedData = validateQuestionData({ prompt, options, answer });
+        const validatedData = validateQuizData(data);
 
         const doc = {
           ...validatedData,
           createdAt: new Date(),
-          updatedAt: new Date(),
         };
 
         const result = await collection.insertOne(doc);
-        fastify.log.info(`Đã tạo câu hỏi mới với ID: ${result.insertedId}`);
+        fastify.log.info(`Đã tạo quiz mới với ID: ${result.insertedId}`);
         return result.insertedId.toString();
       } catch (error) {
-        fastify.log.error('Lỗi khi tạo câu hỏi:', error);
-        throw new FastifyError('Không thể tạo câu hỏi mới.');
+        fastify.log.error('Lỗi khi tạo quiz:', error);
+        throw new FastifyError('Không thể tạo quiz mới.');
       }
     },
 
     /**
-     * Lấy tất cả câu hỏi
-     * @returns {Array} Danh sách câu hỏi
+     * Lấy tất cả quizzes
+     * @param {number} limit - Số lượng tối đa
+     * @param {number} offset - Bỏ qua số lượng
+     * @returns {Array} Danh sách quizzes
      */
-    async getAllQuestions() {
+    async getAllQuizzes(limit = 50, offset = 0) {
       try {
-        const questions = await collection.find({}).sort({ createdAt: -1 }).toArray();
-        return questions;
+        const quizzes = await collection.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit).toArray();
+        return quizzes;
       } catch (error) {
-        fastify.log.error('Lỗi khi lấy danh sách câu hỏi:', error);
-        throw new FastifyError('Không thể lấy danh sách câu hỏi.');
+        fastify.log.error('Lỗi khi lấy danh sách quizzes:', error);
+        throw new FastifyError('Không thể lấy danh sách quizzes.');
       }
     },
 
@@ -83,45 +127,48 @@ async function quizModel(fastify) {
      * @param {string} id - ID của câu hỏi
      * @returns {Object|null} Câu hỏi hoặc null
      */
-    async getQuestionById(id) {
+    async getQuizById(id) {
       try {
         if (!ObjectId.isValid(id)) throw new FastifyError('ID không hợp lệ.');
-        const question = await collection.findOne({ _id: new ObjectId(id) });
-        if (!question) {
+        const quiz = await collection.findOne({ _id: new ObjectId(id) });
+        if (!quiz) {
           throw new FastifyError('Không tìm thấy câu hỏi với ID này.');
         }
-        return question;
+        return quiz;
       } catch (error) {
         fastify.log.error(`Lỗi khi lấy câu hỏi với ID ${id}:`, error);
-        throw new FastifyError('Không thể lấy câu hỏi.');
+        throw new FastifyError('Không thể lấy quiz.');
       }
     },
 
     /**
      * Cập nhật câu hỏi
-     * @param {string} id - ID của câu hỏi
+     * @param {string} id - ID của quiz
      * @param {Object} data - Dữ liệu cập nhật (có thể partial)
      * @returns {boolean} True nếu cập nhật thành công
      */
-    async updateQuestion(id, data) {
+    async updateQuiz(id, data) {
       try {
         if (!ObjectId.isValid(id)) throw new FastifyError('ID không hợp lệ.');
         if (!data || typeof data !== 'object') throw new FastifyError('Dữ liệu cập nhật không hợp lệ.');
 
         // Validate nếu data có prompt/options/answer
      let validatedData = {};
-      if (data.prompt !== undefined || data.options !== undefined || data.answer !== undefined) {
+      if (data.question || data.title || data.topic || data.totalScore !== undefined || data.createdBy || data.finishedAt) {
         // Lấy dữ liệu hiện tại để fill những field không được gửi lên
         const current = await collection.findOne({ _id: new ObjectId(id) });
         if (!current) throw new AppError('Không tìm thấy câu hỏi.', 404);
 
         const toValidate = {
-          prompt: data.prompt !== undefined ? data.prompt : current.prompt,
-          options: data.options !== undefined ? data.options : current.options,
-          answer: data.answer !== undefined ? data.answer : current.answer,
+          title: data.title !== undefined ? data.title : current.title,
+          topic: data.topic !== undefined ? data.topic : current.topic,
+          questions: data.questions !== undefined ? data.questions : current.questions,
+          totalScore: data.totalScore !== undefined ? data.totalScore : current.totalScore,
+          createdBy: data.createdBy !== undefined ? data.createdBy : current.createdBy,
+          finishedAt: data.finishedAt !== undefined ? data.finishedAt : current.finishedAt,
         };
 
-        validatedData = validateQuestionData(toValidate);
+        validatedData = validateQuizData(toValidate);
     }
 
         const updateData = { ...data, ...validatedData, updatedAt: new Date() };
@@ -132,20 +179,20 @@ async function quizModel(fastify) {
         );
 
         if (result.modifiedCount > 0) {
-          fastify.log.info(`Cập nhật câu hỏi với ID ${id}: thành công.`);
+          fastify.log.info(`Cập nhật quiz với ID ${id}: thành công.`);
         } else {
-          fastify.log.warn(`Cập nhật câu hỏi với ID ${id}: không có thay đổi (có thể ID không tồn tại).`);
+          fastify.log.warn(`Cập nhật quiz với ID ${id}: không có thay đổi .`);
         }
         return result.modifiedCount > 0;
       } catch (error) {
-        fastify.log.error(`Lỗi khi cập nhật câu hỏi với ID=${id}:`, error);
-        throw new FastifyError('Không thể cập nhật câu hỏi.');
+        fastify.log.error(`Lỗi khi cập nhật quiz với ID=${id}:`, error);
+        throw new FastifyError('Không thể cập nhật quiz.');
       }
     },
 
     /**
      * Xóa câu hỏi
-     * @param {string} id - ID của câu hỏi
+     * @param {string} id - ID của quiz
      * @returns {boolean} True nếu xóa thành công
      */
     async deleteQuestion(id) {
@@ -154,14 +201,14 @@ async function quizModel(fastify) {
 
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
         if (result.deletedCount > 0) {
-          fastify.log.info(`Xóa câu hỏi với ID=${id}: thành công.`);
+          fastify.log.info(`Xóa quiz với ID=${id}: thành công.`);
         } else {
-          fastify.log.warn(`Xóa câu hỏi với ID=${id}: không tìm thấy tài liệu.`);
+          fastify.log.warn(`Xóa quiz với ID=${id}: không tìm thấy tài liệu.`);
         }
         return result.deletedCount > 0;
       } catch (error) {
-        fastify.log.error(`Lỗi khi xóa câu hỏi với ID=${id}:`, error);
-        throw new FastifyError('Không thể xóa câu hỏi.');
+        fastify.log.error(`Lỗi khi xóa quiz với ID=${id}:`, error);
+        throw new FastifyError('Không thể xóa qiuz.');
       }
     },
   };

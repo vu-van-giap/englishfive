@@ -9,7 +9,7 @@ export const getAllWord = async () => {
 }
 
 export const createWord = async (data) => {
-
+    console.log(data)
     const res = await api.post(
         "/words",
         data,

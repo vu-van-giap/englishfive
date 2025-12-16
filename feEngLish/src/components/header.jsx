@@ -75,7 +75,7 @@ export default function Header() {
               >
                 FlashCard
               </Link>
-              <a href="#" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
+              <a href="/show_word" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
                 Quiz
               </a>
               <a href="#" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">

@@ -1,8 +1,9 @@
 const ModalWord = ({ isOpen, onClose, word, onSubmit }) => {
+  
   if (!isOpen || !word) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
       <div className="bg-white rounded-base w-full max-w-md p-6">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4">

@@ -78,7 +78,7 @@ export default function Header() {
               <a href="/show_word" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
                 Quiz
               </a>
-              <a href="#" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
+              <a href="/show_user" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
                 Audio
               </a>
             </div>
@@ -166,7 +166,7 @@ export default function Header() {
                           Quiz
                         </a>
                         <a
-                          href="#"
+                          href="/show_user"
                           className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                         >
                           Audio

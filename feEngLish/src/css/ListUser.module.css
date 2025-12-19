@@ -1,0 +1,107 @@
+.manager_user {
+    background-color: oklch(0.98 0 0);
+    padding: 30px;
+}
+
+.container_manager {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header_manager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.left_header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left_header div:first-of-type {
+    color: oklch(0.55 0.24 262.91);
+    width: 55px;
+    height: 55px;
+    background-color: oklch(93.2% 0.032 255.585);
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+.left_header div:first-of-type svg {
+    width: 30px;
+    height: 30px;
+}
+
+.left_header div:nth-child(2) h1 {
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.left_header div:nth-child(2) p {
+    color: rgb(150, 150, 150);
+}
+
+.right_header button {
+    display: flex;
+    background-color: oklch(0.11 0.04 280.7);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: 700;
+}
+
+.right_header button svg {
+    margin-right: 3px;
+}
+
+.section_manager{
+    padding: 30px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 50px;
+}
+
+.section_manager>div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background-color: white;
+    padding: 20px;
+}
+.section_manager>div div:nth-child(2){
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+}
+.section_manager>div:nth-child(1) div:nth-child(2){
+        background-color: rgb(183, 208, 252);
+        color: rgb(80, 143, 253);;
+}
+.section_manager>div:nth-child(2) div:nth-child(2){
+        background-color: rgb(227, 198, 254);
+        color: rgb(166, 74, 253);
+
+}
+.section_manager>div:nth-child(3) div:nth-child(2){
+        background-color: rgb(194, 253, 207);
+        color: rgb(77, 250, 115);
+}
+
+.table_manager{
+    border: 1px solid #333;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+
+.table_manager table tr td{
+    padding: 10px 0;
+}

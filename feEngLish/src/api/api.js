@@ -11,7 +11,7 @@ const api = axios.create({
 api.interceptors.request.use(
     
     (config)=>{
-        const token = localStorage.getItem("access");
+        const token = localStorage.getItem("token");
         if(token) {
             const decoded = jwtDecode(token);
             const expiry_data =decoded.exp;

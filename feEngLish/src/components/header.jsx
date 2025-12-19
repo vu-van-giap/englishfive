@@ -66,7 +66,7 @@ export default function Header() {
                 to="/"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Home
+                Trang chủ
               </Link>
               <Link
                 to="/createword"
@@ -74,14 +74,21 @@ export default function Header() {
               >
                 FlashCard
               </Link>
+              <Link
+                to="/xemfl"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
+                Thẻ lật
+              </Link>
+
               <a
-                href="#"
+                href="/show_word"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
                 Quiz
               </a>
               <a
-                href="#"
+                href="/show_user"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
                 Audio
@@ -169,7 +176,7 @@ export default function Header() {
                           Quiz
                         </a>
                         <a
-                          href="#"
+                          href="/show_user"
                           className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                         >
                           Audio

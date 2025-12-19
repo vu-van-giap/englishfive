@@ -22,6 +22,7 @@ export const AppLayout = () => {
                 <Route path="/login" element={<Login />} />
                 {/* <Route path="/createword" element={<ProtectedRoute><CreateWord /></ProtectedRoute>} /> */}
                 <Route path="/createword" element={<CreateWord />} />
+                <Route path="/show_word" element={<ListWord />} />
                 <Route path="/show_user" element={<ListUser />} />
             </Routes>
             <Page1></Page1>

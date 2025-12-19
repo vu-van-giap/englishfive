@@ -8,6 +8,7 @@ const wordRoutes = require('./routes/words');
 const progressRoutes = require('./routes/progress');
 const quizRoutes = require('./routes/quizs');
 const vocabRoutes = require('./routes/vocabs');
+const flashcardRoutes = require('./routes/flashcards');
 
 // Đăng ký plugin để phục vụ tệp tĩnh
 fastify.register(require('@fastify/static'), {
@@ -38,6 +39,7 @@ fastify.register(wordRoutes, { prefix: '/words' });
 fastify.register(progressRoutes, { prefix: '/progress' });
 fastify.register(quizRoutes, { prefix: '/quiz' });
 fastify.register(vocabRoutes, { prefix: '/vocab' });
+fastify.register(flashcardRoutes, { prefix: '/flashcard' });
 
 // 🔹 Khởi động server
 const start = async () => {

@@ -10,8 +10,10 @@ export const getAllUser = () =>{
 }
 
 export const createUser = async ({ username, fullname, password, role }) => {
-  try {
-    const res = await api.post(`/register`, {
+  try 
+  {
+    console.log(username, fullname, password, role);
+    const res = await api.post(`/auth/register`, {
       username,
       fullname,
       password,

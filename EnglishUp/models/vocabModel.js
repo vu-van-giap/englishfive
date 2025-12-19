@@ -34,20 +34,24 @@ async function vocabModel(fastify) {
         }
         const word = data.word ? String(data.word).trim() : '';
         const meaning = data.meaning ? String(data.meaning).trim() : '';
-        const topic = (data.topic ===null || data.topic ===  undefined) ? null : String(data.topic).trim();
-        if (topic === '') return { word, meaning, topic: null };
-        return { word, meaning, topic };
-    }; 
+        const partOfSpeech = data.partOfSpeech ? String(data.partOfSpeech).trim() : '';
+        const pronunciation = data.pronunciation ? String(data.pronunciation).trim() : '';
+        const examples = Array.isArray(data.examples) ? data.examples.map(ex => String(ex).trim()).filter(ex => ex) : [];
+        const topic = (data.topic === null || data.topic === undefined) ? 'general' : String(data.topic).trim();
+        const level = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'other'].includes(data.level) ? data.level : 'other';
+        const tags = Array.isArray(data.tags) ? data.tags.map(tag => String(tag).trim()).filter(tag => tag) : [];
+        return { word, meaning, partOfSpeech, pronunciation, examples, topic, level, tags };
+    };
 
     return {
         /**
         * Tạo vocab mới
-        * @param {{word: string, meaning: string, topic?: string}} data
+        * @param {{word: string, meaning: string, partOfSpeech?: string, pronunciation?: string, examples?: string[], topic?: string, lever?: string, tags?: string[]}} data
         * @returns {Promise<ObjectId>}        
         */
        async createVocab(data) {
         try {
-            const { word, meaning, topic } = normalizeInput(data);
+            const { word, meaning, partOfSpeech, pronunciation, examples, topic, level, tags } = normalizeInput(data);
 
         //Validate cơ bản
         if (!word) {
@@ -64,14 +68,19 @@ async function vocabModel(fastify) {
         const doc = {
             word,
             meaning,
+            partOfSpeech: partOfSpeech || null,
+            pronunciation: pronunciation || null,
+            examples,
             topic,
+            level,
+            tags,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
 
         const result = await collection.insertOne(doc);
         fastify.log.info(`vocab created id=${result.insertedId}`);
-        return result.insertedId;
+        return result.insertedId; 
        } catch (err) {
         fastify.log.error('createVocab error:', err);
         throw err;
@@ -179,9 +188,12 @@ async function vocabModel(fastify) {
             const nomalized = normalizeInput(data);
             if (nomalized.word) update.word = nomalized.word;
             if (nomalized.meaning) update.meaning = nomalized.meaning;
-            if (Object.prototype.hasOwnProperty.call(data, 'topic')) {
-                update.topic = nomalized.topic;
-            }
+            if (ObjectId.prototype.hasOwnProperty.call(data, 'partOfSpeech')) update.partOfSpeech = nomalized.partOfSpeech || null;
+            if (Object.prototype.hasOwnProperty.call(data, 'pronunciation')) update.pronunciation = nomalized.pronunciation || null;
+            if (Object.prototype.hasOwnProperty.call(data, 'examples')) update.examples = nomalized.examples;
+            if (Object.prototype.hasOwnProperty.call(data, 'topic')) update.topic = nomalized.topic;
+            if (Object.prototype.hasOwnProperty.call(data, 'level')) update.level = nomalized.level;
+            if (Object.prototype.hasOwnProperty.call(data, 'tags')) update.tags = nomalized.tags;
             if (Object.keys(update).length ===0) {
                 //Không có trường để cập nhập
                 return false;
@@ -232,6 +244,7 @@ async function vocabModel(fastify) {
             // Index cho word và topic
             await collection.createIndex({ word: 1 }, { background: true });
             await collection.createIndex({ topic: 1 }, { background: true });
+            await collection.createIndex({ level: 1 }, { background: true });
             // Text index cho tìm kiếm word và meaning
             await collection.createIndex({ word: 'text', meaning: 'text' }, { background: true });
             fastify.log.info('vocab indexes ensured');

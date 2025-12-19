@@ -1,5 +1,5 @@
 const fastify = require('fastify')({ logger: true });
-const path = require('node:path');
+const path = require('path');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -12,8 +12,8 @@ const flashcardRoutes = require('./routes/flashcards');
 
 // Đăng ký plugin để phục vụ tệp tĩnh
 fastify.register(require('@fastify/static'), {
-  root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
-  prefix: '/', // Phục vụ từ root
+  root: path.join(__dirname, 'uploads'), // Đường dẫn đến build của React
+  prefix: '/assets', // Phục vụ từ root
 });
 
 // Plugins cần thiết

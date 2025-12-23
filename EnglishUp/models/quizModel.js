@@ -4,16 +4,16 @@ const { ObjectId } = require('mongodb');
 
 // Mapping topic -> hình ảnh đại diện (có thể mở rộng dễ dàng)
 const TOPIC_IMAGES = {
-  'Family': 'https://i.ytimg.com/vi/24GWC1dDyUM/hq720.jpg', // Happy family cartoon
-  'Food and Drinks': 'https://www.shutterstock.com/image-vector/fruits-flashcards-collection-educational-cards-260nw-2642164621.jpg', // Colorful food
-  'Animals': 'https://i.ytimg.com/vi/e-8h14-C39Y/hq720.jpg', // Cute animals
-  'Colors': 'https://i.ytimg.com/vi/oTbI5s9k8nc/maxresdefault.jpg', // Rainbow colors
+  'Family': 'https://www.shutterstock.com/image-photo/directly-above-shot-happy-family-260nw-2484961857.jpg', // Happy family cartoon
+  'Food and Drinks': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsaYKkdPy6VHcUADle6BurPp8Y-vdHxGvaqA&s', // Colorful food
+  'Animals': 'https://media.istockphoto.com/id/935702298/vi/vec-to/b%E1%BB%99-s%C6%B0u-t%E1%BA%ADp-%C4%91%E1%BB%99ng-v%E1%BA%ADt-d%E1%BB%85-th%C6%B0%C6%A1ng-%C4%91%E1%BB%99ng-v%E1%BA%ADt-trang-tr%E1%BA%A1i-%C4%91%E1%BB%99ng-v%E1%BA%ADt-hoang-d%C3%A3-%C4%91%E1%BB%99ng-v%E1%BA%ADt-b%E1%BA%BFn-du-thuy%E1%BB%81n-b%E1%BB%8B.jpg?s=612x612&w=0&k=20&c=Rs9l9LLJSqOhT-x7-pgCIipC8Vc_jnCMmU5I6ksDgwg=p', // Cute animals
+  'Colors': 'https://benative.vn/wp-content/uploads/2019/07/tu-vung-tieng-anh-theo-chu-de-mau-sac.jpg', // Rainbow colors
   'Daily Routines': 'https://thumbs.dreamstime.com/b/routine-child-boy-going-back-to-school-wake-up-brushes-teeth-takes-shower-eat-has-breakfast-vector-cartoon-129680865.jpg',
-  'Weather': 'https://static.vecteezy.com/system/resources/previews/042/975/160/non_2x/kids-weather-flashcards-cartoon-studying-cards-for-children-education-with-cute-season-weather-icons-rainy-clouds-happy-sunny-smiling-snow-wind-baby-poster-set-vector.jpg',
-  'Jobs': 'https://i.ytimg.com/vi/fl1sU2v4p-Y/maxresdefault.jpg', // Occupations
-  'Travel': 'https://www.shutterstock.com/image-vector/3d-luggage-airplane-camera-tropical-260nw-2629665831.jpg', // Holiday travel
-  'Sports': 'https://www.shutterstock.com/shutterstock/photos/666488743/display_1500/stock-vector-team-sports-for-kids-including-football-basketball-american-football-baseball-tennis-golf-666488743.jpg',
-  'Body Parts': 'https://thumbs.dreamstime.com/b/human-body-parts-kids-illustrated-diagram-anatomy-boy-cartoon-style-illustration-anatomy-poster-human-body-349020508.jpg',
+  'Weather': 'https://alokiddy.com.vn/Uploads/images/huong/tu-vung-tieng-anh-ve-thoi-tiet-weather.jpg',
+  'Jobs': 'https://media.istockphoto.com/id/1281220412/vi/vec-to/t%C3%ACm-ki%E1%BA%BFm-%E1%BB%A9ng-vi%C3%AAn-ho%E1%BA%B7c-c%C3%B4ng-vi%E1%BB%87c-t%E1%BB%91t-nh%E1%BA%A5t-nh%C3%A2n-s%E1%BB%B1-s%C4%83n-%C4%91%E1%BA%A7u-ng%C6%B0%E1%BB%9Di-ch%E1%BB%8Dn-nh%C3%A2n-t%C3%A0i-cho-v%E1%BB%8B-tr%C3%AD.jpg?s=612x612&w=0&k=20&c=nW3bXA_mtV2Q3H-tDRW1O4-dFeDNNFYgizFydjl7wd4=', // Occupations
+  'Travel': 'https://upload.urbox.vn/strapi/vietravel_001_2c952c7e85.png', // Holiday travel
+  'Sports': 'https://www.shutterstock.com/image-photo/dynamic-collage-athletes-various-sports-260nw-2493176587.jpg',
+  'Body Parts': 'https://www.shutterstock.com/image-vector/body-part-little-african-boy-600nw-2355921939.jpg',
 };
 /**
  * Khởi tạo Quiz Model - kết nối tới collection 'quiz' trong MongoDB

@@ -1,5 +1,7 @@
 //models vocabModel.js
 const { ObjectId } = require('mongodb');
+const topicsConfig = require('../config/topics');
+const validTopics = topicsConfig.map(t => t.value);
 
 /**
  * Hàm khởi tạo Model Vocab
@@ -19,7 +21,7 @@ const { ObjectId } = require('mongodb');
 async function vocabModel(fastify) {
     //Lấy collection mỗi lần gọi (để tránh require lúc fastify chuwq init)
         if (!fastify || !fastify.mongo || !fastify.mongo.db) {
-            throw new Error('vocabModel: fastify.mongodb is not initialzied');
+            throw new Error('vocabModel: fastify.mongodb chưa được khởi tạo');
         }
 
         const collection = fastify.mongo.db.collection('vocab');    
@@ -28,20 +30,27 @@ async function vocabModel(fastify) {
     const isValidId = (id) =>  ObjectId.isValid(id);
 
     // Helper :chuẩn hóa dữ liệu input
-    const normalizeInput = (data ={}) => {
-        if (!data || typeof data !== 'object') {
-            throw new Error('Invalid input data');
-        }
-        const word = data.word ? String(data.word).trim() : '';
-        const meaning = data.meaning ? String(data.meaning).trim() : '';
-        const partOfSpeech = data.partOfSpeech ? String(data.partOfSpeech).trim() : '';
-        const pronunciation = data.pronunciation ? String(data.pronunciation).trim() : '';
-        const examples = Array.isArray(data.examples) ? data.examples.map(ex => String(ex).trim()).filter(ex => ex) : [];
-        const topic = (data.topic === null || data.topic === undefined) ? 'general' : String(data.topic).trim();
-        const level = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'other'].includes(data.level) ? data.level : 'other';
-        const tags = Array.isArray(data.tags) ? data.tags.map(tag => String(tag).trim()).filter(tag => tag) : [];
-        return { word, meaning, partOfSpeech, pronunciation, examples, topic, level, tags };
-    };
+    const normalizeInput = (data = {}) => {
+    if (!data || typeof data !== 'object') {
+        throw new Error('Dữ liệu đầu vào không hợp lệ');
+    }
+    const word = data.word ? String(data.word).trim() : '';
+    const meaning = data.meaning ? String(data.meaning).trim() : '';
+    const partOfSpeech = data.partOfSpeech ? String(data.partOfSpeech).trim() : '';
+    const pronunciation = data.pronunciation ? String(data.pronunciation).trim() : '';
+    const examples = Array.isArray(data.examples) ? data.examples.map(ex => String(ex).trim()).filter(ex => ex) : [];
+    
+    // Validate và chuẩn hóa topic
+    let topic = data.topic !== undefined && data.topic !== null ? String(data.topic).trim().toLowerCase() : 'general';
+    if (!validTopics.includes(topic)) {
+        topic = 'general'; // fallback nếu không hợp lệ
+    }
+
+    const level = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'other'].includes(data.level) ? data.level : 'other';
+    const tags = Array.isArray(data.tags) ? data.tags.map(tag => String(tag).trim()).filter(tag => tag) : [];
+    
+    return { word, meaning, partOfSpeech, pronunciation, examples, topic, level, tags };
+};
 
     return {
         /**
@@ -55,12 +64,12 @@ async function vocabModel(fastify) {
 
         //Validate cơ bản
         if (!word) {
-            const e = new Error('Field "word" is required');
+            const e = new Error('Trường "word" là bắt buộc');
             e.statusCode = 400;
             throw e;
         }
         if (!meaning) {
-            const e = new Error('Field "meaning" is required');
+            const e = new Error('Trường "meaning" là bắt buộc');
             e.statusCode = 400;
             throw e;
         }
@@ -82,7 +91,7 @@ async function vocabModel(fastify) {
         fastify.log.info(`vocab created id=${result.insertedId}`);
         return result.insertedId; 
        } catch (err) {
-        fastify.log.error('createVocab error:', err);
+        fastify.log.error('lỗi createVocab:', err);
         throw err;
        }
     },
@@ -103,7 +112,7 @@ async function vocabModel(fastify) {
         const total = await collection.countDocuments({});
         return { items, total, page, limit };
       } catch (err) {
-        fastify.log.error('getAllVocabs error:', err);
+        fastify.log.error('Lỗi getAllVocab :', err);
         throw err;
       }
     },
@@ -119,7 +128,7 @@ async function vocabModel(fastify) {
             const doc = await collection.findOne({ _id: new ObjectId(id) });
             return doc;
         }   catch (err) {
-            fastify.log.error('getVocabById error:', err);
+            fastify.log.error('Lỗi getVocabById:', err);
             throw err;
         }
     },
@@ -133,7 +142,7 @@ async function vocabModel(fastify) {
         try {
             return await collection.find({ topic }).sort({ createdAt: -1 }).toArray();
         } catch (err) {
-            fastify.log.error('getVocabsByTopic error:', err);
+            fastify.log.error('Lỗi getVocabByTopic:', err);
             throw err;  
         }
     },
@@ -165,7 +174,7 @@ async function vocabModel(fastify) {
             const total = await collection.countDocuments(filter);
             return { items, total, page, limit };
         } catch (err) {
-            fastify.log.error('searchVocabs error:', err);
+            fastify.log.error('Lỗi searchVocab:', err);
             throw err;
         }
     },
@@ -179,7 +188,7 @@ async function vocabModel(fastify) {
     async updateVocab(id, data) {
         try {
             if (!isValidId(id)) {
-                const e = new Error('Invalid  id');
+                const e = new Error('Id không hợp lệ');
                 e.statusCode = 400;
                 throw e;
             }
@@ -204,10 +213,10 @@ async function vocabModel(fastify) {
                 { _id: new ObjectId(id) },
                 { $set: update }
             );
-            fastify.log.info(`vocab updated id=${id} modified=${result.modifiedCount}`);
+            fastify.log.info(`vocab cập nhập id=${id} modified=${result.modifiedCount}`);
             return result.modifiedCount > 0;
         }catch (err) {
-            fastify.log.error('updateVocab error:', err);
+            fastify.log.error('Lỗi updateVocab:', err);
             throw err;
         }
     },
@@ -221,16 +230,16 @@ async function vocabModel(fastify) {
     async deleteVocab(id) {
         try {
             if (!isValidId(id)) {
-                const e = new Error('Invalid id');
+                const e = new Error('Id không hợp lệ');
                 e.statusCode = 400;
                 throw e;
             }
             
             const result = await collection.deleteOne({ _id: new ObjectId(id) });
-            fastify.log.info(`vocab deleted id=${id} deleted=${result.deletedCount}`);
+            fastify.log.info(`vocab xóa id=${id} deleted=${result.deletedCount}`);
             return result.deletedCount > 0;
         } catch (err) {
-            fastify.log.error('deleteVocab error:', err);
+            fastify.log.error('Lỗi deleteVocab:', err);
             throw err;
         }
     },
@@ -247,9 +256,9 @@ async function vocabModel(fastify) {
             await collection.createIndex({ level: 1 }, { background: true });
             // Text index cho tìm kiếm word và meaning
             await collection.createIndex({ word: 'text', meaning: 'text' }, { background: true });
-            fastify.log.info('vocab indexes ensured');
+            fastify.log.info('Các chỉ mục vocab được đảm bảo');
         } catch (err) {
-            fastify.log.error('ensureIndexes error:', err);
+            fastify.log.error('Lỗi ensureIndexes:', err);
             // Không ném để khoongh block startup nếu index create fail        
         }
     },

@@ -75,12 +75,35 @@ export default function Header() {
               >
                 FlashCard
               </Link>
-              <a href="/show_word" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
+              {/* <a href="/show_word" className="text-sm/6 font-semibold text-gray-900 mr-5 aa"> */}
+                <Link
+                  to="/xemfl"
+                  className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+                >
+                  Thẻ lật
+                </Link>
+
+                {/* <a
+                href="/show_word"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
                 Quiz
-              </a>
-              <a href="/show_user" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
-                Audio
-              </a>
+              </a> */}
+                <a
+                  href="/quiz_topic"
+                  className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+                >
+                  Quiz
+                </a>
+                <a
+                  href="/vocab"
+                  className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+                >
+                  Vocab
+                </a>
+                <a href="/show_user" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
+                  Audio
+                </a>
             </div>
             {/*  */}
             <div className="hidden lg:flex lg:flex-1 justify-content-center ml-5 ">

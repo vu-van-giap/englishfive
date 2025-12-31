@@ -1,5 +1,13 @@
 
-const Vocabs = () => {
-    return <div>Vocabs Component</div>;
+const VocabsLayout = () => {
+    return (
+        <>
+            <div>
+
+                Vocabs Layout Component
+                div.header_
+            </div>
+        </>
+    );
 }
-export default Vocabs;
+export default VocabsLayout;

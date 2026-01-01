@@ -12,6 +12,7 @@ const CreateWord = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log({ english, vietnamese, type, pronunciation, example });
       const res = await createWord({ english, vietnamese, type, pronunciation, example });
       toast.success(res.data.message);
 

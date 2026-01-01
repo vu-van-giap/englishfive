@@ -1,5 +1,5 @@
 const fastify = require('fastify')({ logger: true });
-const path = require('path');
+const path = require('node:path');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -8,11 +8,14 @@ const wordRoutes = require('./routes/words');
 const progressRoutes = require('./routes/progress');
 const quizRoutes = require('./routes/quizs');
 const vocabRoutes = require('./routes/vocabs');
+const pronunciationRoutes = require('./routes/pronunciation');
+const listeningRoutes = require('./routes/listening');
+const flashcardRoutes = require('./routes/flashcards');
 
 // Đăng ký plugin để phục vụ tệp tĩnh
 fastify.register(require('@fastify/static'), {
-  root: path.join(__dirname, 'uploads'), // Đường dẫn đến build của React
-  prefix: '/assets', // Phục vụ từ root
+  root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
+  prefix: '/', // Phục vụ từ root
 });
 
 // Plugins cần thiết
@@ -38,6 +41,9 @@ fastify.register(wordRoutes, { prefix: '/words' });
 fastify.register(progressRoutes, { prefix: '/progress' });
 fastify.register(quizRoutes, { prefix: '/quiz' });
 fastify.register(vocabRoutes, { prefix: '/vocab' });
+fastify.register(pronunciationRoutes, { prefix: '/pronunciation' });
+fastify.register(listeningRoutes, { prefix: '/listening' });
+fastify.register(flashcardRoutes, { prefix: '/flashcard' });
 
 // 🔹 Khởi động server
 const start = async () => {

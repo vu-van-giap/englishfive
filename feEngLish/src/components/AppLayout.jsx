@@ -26,6 +26,8 @@ export const AppLayout = () => {
         <Route path="/show_word" element={<ListWord />} />
         <Route path="/show_user" element={<ListUser />} />
         <Route path="/xemfl" element={<Appkhac />} />
+        {/* Thêm fallback route */}
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
       <Page1></Page1>
       <Page2></Page2>

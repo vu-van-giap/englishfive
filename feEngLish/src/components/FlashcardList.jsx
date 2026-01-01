@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import flashcardService from "../services/flashcard";
+import EditFlashcard from "./EditFlashcard";
 
 const FlashcardList = () => {
   const [flashcards, setFlashcards] = useState([]);
@@ -8,6 +9,8 @@ const FlashcardList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingCard, setEditingCard] = useState(null);
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
     fetchFlashcards();
@@ -51,6 +54,51 @@ const FlashcardList = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this flashcard?")) {
+      return;
+    }
+
+    try {
+      await flashcardService.deleteFlashcard(id);
+      setFlashcards(flashcards.filter((card) => card._id !== id));
+      setMessage({
+        type: "success",
+        text: "Flashcard deleted successfully!",
+      });
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setMessage({ type: "", text: "" });
+      }, 3000);
+    } catch (err) {
+      setMessage({
+        type: "error",
+        text: err.response?.data?.message || "Failed to delete flashcard",
+      });
+      console.error(err);
+    }
+  };
+
+  const handleUpdateSuccess = () => {
+    setEditingCard(null);
+    fetchFlashcards(); // Refresh list
+
+    setMessage({
+      type: "success",
+      text: "Flashcard updated successfully!",
+    });
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      setMessage({ type: "", text: "" });
+    }, 3000);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCard(null);
+  };
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -71,9 +119,44 @@ const FlashcardList = () => {
     );
   }
 
+  // Nếu đang chỉnh sửa, hiển thị form edit
+  if (editingCard) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-blue-600">Edit Flashcard</h2>
+          <button
+            onClick={handleCancelEdit}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            ← Back to List
+          </button>
+        </div>
+        <EditFlashcard
+          card={editingCard}
+          onSuccess={handleUpdateSuccess}
+          onCancel={handleCancelEdit}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-center">Flashcard List</h2>
+
+      {/* Success/Error message */}
+      {message.text && (
+        <div
+          className={`mb-6 px-4 py-3 rounded-lg font-medium ${
+            message.type === "success"
+              ? "bg-green-100 text-green-700 border border-green-400"
+              : "bg-red-100 text-red-700 border border-red-400"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
 
       {/* Search bar */}
       <div className="flex flex-wrap gap-3 mb-8">
@@ -130,15 +213,57 @@ const FlashcardList = () => {
                 <span className="text-lg">{card.back}</span>
               </div>
               {card.topic && (
-                <div className="text-gray-600">
+                <div className="text-gray-600 mb-3">
                   <strong>Topic:</strong> {card.topic}
                 </div>
               )}
-              <div className="text-gray-500 text-sm mt-3">
+              <div className="text-gray-500 text-sm mt-3 mb-4">
                 <span>User ID: {card.userId}</span> •
                 <span className="ml-2">
                   Created: {new Date(card.createdAt).toLocaleDateString()}
                 </span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <button
+                  onClick={() => setEditingCard(card)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(card._id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Delete
+                </button>
               </div>
             </div>
           ))

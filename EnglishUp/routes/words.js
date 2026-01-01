@@ -14,6 +14,7 @@ async function wordRoutes(fastify, options) {
 
   // Thêm từ vựng mới
   fastify.post('/', { onRequest: [auth, role('admin')] }, async (req, reply) => {
+    console.log(req.body)
     const { english, vietnamese, type, pronunciation, example } = req.body;
 
     await db.collection('words').insertOne({

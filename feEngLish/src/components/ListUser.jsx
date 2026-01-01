@@ -5,6 +5,7 @@ import ModalUser from "./ModalUser";
 import { useState, useEffect } from "react";
 import { getAllUser, deleteUser } from "../services/user";
 import { toast } from "react-toastify";
+
 const ListUser = () => {
     const [listuser, setListUser] = useState([]);
     const [openModal, setOpenModal] = useState(false);

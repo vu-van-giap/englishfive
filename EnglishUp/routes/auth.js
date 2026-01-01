@@ -25,6 +25,8 @@ async function authRoutes(fastify, options) {
   // Đăng nhập
   fastify.post('/login', async (req, reply) => {
     const { username, password } = req.body;
+    console.log('Login attempt: 🍕', username, password);
+
     const user = await db.collection('users').findOne({ username });
     if (!user) return reply.code(404).send({ message: 'Người dùng không tồn tại' });
 

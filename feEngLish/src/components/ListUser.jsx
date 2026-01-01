@@ -1,10 +1,10 @@
 import clsx from "clsx"
 import styles from "../css/ListUser.module.css";
-import ModalWord from "./ModalWord";
 import ModalUser from "./ModalUser";
 import { useState, useEffect } from "react";
 import { getAllUser, deleteUser } from "../services/user";
 import { toast } from "react-toastify";
+
 const ListUser = () => {
     const [listuser, setListUser] = useState([]);
     const [openModal, setOpenModal] = useState(false);

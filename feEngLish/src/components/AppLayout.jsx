@@ -13,6 +13,12 @@ import clsx from "clsx";
 import styles from "../css/AppLayOut.module.css";
 import ListUser from "./ListUser";
 import Appkhac from "./Gomlaiflashcard";
+
+import VocabsLayout from "./VocabsLayout";
+import LayoutTopicQuiz from "./LayoutTopicQuiz";
+import QuizListPage from "./QuizsList";
+import QuizDetailPage from "./QuizDetail";
+import QuizResultPage from "./QuizResultPage";
 export const AppLayout = () => {
   return (
     <>
@@ -28,6 +34,16 @@ export const AppLayout = () => {
         <Route path="/xemfl" element={<Appkhac />} />
         {/* Thêm fallback route */}
         <Route path="*" element={<div>404 - Page Not Found</div>} />
+        {/* Quiz */}
+        <Route path="/quiz_topic" element={<LayoutTopicQuiz />} />
+        <Route path="/quiz/topic/:topic" element={<QuizListPage />} />
+        <Route path="/quiz/:id" element={<QuizDetailPage />} />
+        <Route path="/quiz/:id/result" element={<QuizResultPage />} />
+        {/* End Quiz */}
+        <Route path="/vocab" element={<VocabsLayout />} />
+        <Route path="/show_user" element={<ListUser />} />
+
+        <Route path="/xemfl" element={<Appkhac />} />
       </Routes>
       <Page1></Page1>
       <Page2></Page2>

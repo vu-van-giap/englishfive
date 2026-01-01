@@ -130,7 +130,7 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
                         <button type="button" onClick={onClose} className="px-4 py-2 border rounded">
                             Hủy
                         </button>
-                        <button type="submit" className="bg-black text-white px-4 py-2 rounded">
+                        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
                             Lưu
                         </button>
                     </div>

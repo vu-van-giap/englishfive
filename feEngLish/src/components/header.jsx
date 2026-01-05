@@ -1,4 +1,3 @@
-import "../css/header.css";
 import { Link } from "react-router-dom";
 import { logout } from "../services/auth";
 import { toast } from "react-toastify";
@@ -17,7 +16,7 @@ export default function Header() {
     } catch (error) {
       console.error("Logout failed:", error);
     }
-  }
+  };
   return (
     <>
       <div className="bg-white">
@@ -67,7 +66,7 @@ export default function Header() {
                 to="/"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Home
+                Trang chủ
               </Link>
               <Link
                 to="/createword"
@@ -75,35 +74,37 @@ export default function Header() {
               >
                 FlashCard
               </Link>
-              {/* <a href="/show_word" className="text-sm/6 font-semibold text-gray-900 mr-5 aa"> */}
-                <Link
-                  to="/xemfl"
-                  className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
-                >
-                  Thẻ lật
-                </Link>
+              <Link
+                to="/xemfl"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
+                Thẻ lật
+              </Link>
 
-                {/* <a
+              {/* <a
                 href="/show_word"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
                 Quiz
               </a> */}
-                <a
-                  href="/quiz_topic"
-                  className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
-                >
-                  Quiz
-                </a>
-                <a
-                  href="/vocab"
-                  className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
-                >
-                  Vocab
-                </a>
-                <a href="/show_user" className="text-sm/6 font-semibold text-gray-900 mr-5 aa">
-                  Audio
-                </a>
+              <a
+                href="/quiz_topic"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
+                Quiz
+              </a>
+              <a
+                href="/vocab"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
+                Vocab
+              </a>
+              <a
+                href="/show_user"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
+                Audio
+              </a>
             </div>
             {/*  */}
             <div className="hidden lg:flex lg:flex-1 justify-content-center ml-5 ">
@@ -111,28 +112,26 @@ export default function Header() {
                 <button
                   onClick={handleLogout}
                   className="text-sm/6 font-semibold text-gray-900 bg-red-500 border p-1 rounded"
-
                 >
                   Log out
                 </button>
-              )
-                : (
-                  <Link
-                    to="/login"
-                    className="text-sm/6 font-semibold text-gray-900 bg-blue-500 border p-1 rounded"
-                  >
-                    Log in
-                  </Link>
-                )
-              }
-
-
+              ) : (
+                <Link
+                  to="/login"
+                  className="text-sm/6 font-semibold text-gray-900 bg-blue-500 border p-1 rounded"
+                >
+                  Log in
+                </Link>
+              )}
             </div>
             {/* doi theme */}
           </nav>
 
           <el-dialog>
-            <dialog id="mobile-menu" className="backdrop:bg-transparent lg:hidden">
+            <dialog
+              id="mobile-menu"
+              className="backdrop:bg-transparent lg:hidden"
+            >
               <div tabIndex={0} className="fixed inset-0 focus:outline-none">
                 <el-dialog-panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                   <div className="flex items-center justify-between">
@@ -200,20 +199,17 @@ export default function Header() {
                           <button
                             onClick={handleLogout}
                             className="text-sm/6 font-semibold text-gray-900 bg-red-500 border p-1 rounded"
-
                           >
                             Log out
                           </button>
-                        )
-                          : (
-                            <Link
-                              to="/login"
-                              className="text-sm/6 font-semibold text-gray-900 bg-blue-500 border p-1 rounded"
-                            >
-                              Log in
-                            </Link>
-                          )
-                        }
+                        ) : (
+                          <Link
+                            to="/login"
+                            className="text-sm/6 font-semibold text-gray-900 bg-blue-500 border p-1 rounded"
+                          >
+                            Log in
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>

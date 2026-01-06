@@ -3,8 +3,12 @@ import Modal from './Modal';
 import QuizForm from './ModalQuiz';
 import QuizItem from './QuizItem';
 import TopicFilter from './TopicFilter';
-import { getAllQuiz, createQuiz, updateQuiz, deleteQuizById } from '../../services/quiz';
-
+import {
+  getAllQuiz,
+  createQuiz,
+  updateQuiz,
+  deleteQuizById
+} from '../../services/quiz';
 
 export default function QuizList() {
   const [quizzes, setQuizzes] = useState([]);
@@ -14,13 +18,13 @@ export default function QuizList() {
 
   useEffect(() => {
     fetchQuizzes();
-  }, [])
+  }, []);
 
   const fetchQuizzes = async () => {
     const res = await getAllQuiz();
-    if (res.success) setQuizzes(res.data);
+    if (res?.success) setQuizzes(res.data);
   };
-  
+
   const handleAddNew = () => {
     setEditQuiz(null);
     setIsModalOpen(true);
@@ -33,45 +37,61 @@ export default function QuizList() {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setEditQuiz(null);
   };
 
-  const handleFormSuccess = (newQuiz) => {
+  const handleFormSuccess = async (quizData) => {
     if (editQuiz) {
-      setQuizzes(prev => prev.map(q => q._id === newQuiz._id ? newQuiz : q));
+      await updateQuiz(editQuiz._id, quizData);
     } else {
-      setQuizzes(prev => [...prev, newQuiz]);
+      await createQuiz(quizData);
     }
+
     setIsModalOpen(false);
+    setEditQuiz(null);
+    fetchQuizzes(); // reload từ backend
   };
 
   const filteredQuizzes = topicFilter
-    ? quizzes.filter(q => q.topic.toLowerCase() === topicFilter.toLowerCase())
+    ? quizzes.filter(q => q.topic === topicFilter)
     : quizzes;
 
   return (
     <div>
-      <div className='bg-[#f0f9ff] h-[170px] flex items-center justify-center '>
-        <h2 className='w-full text-center font-bold text-5xl'>Trang quản lý Quiz</h2>
+      <div className="bg-[#f0f9ff] h-[170px] flex items-center justify-center">
+        <h2 className="w-full text-center font-bold text-5xl">
+          Trang quản lý Quiz
+        </h2>
       </div>
-      <div style={{ marginBottom: 20 }}>
-        <button className='bg-blue-500 p-2 rounded text-white' onClick={handleAddNew} style={{ marginRight: 10 }}>Tạo Quiz Mới</button>
+
+      <div className="flex gap-4 p-4">
+        <button
+          className="bg-blue-500 p-2 rounded text-white"
+          onClick={handleAddNew}
+        >
+          Tạo Quiz Mới
+        </button>
+
         <TopicFilter value={topicFilter} onChange={setTopicFilter} />
       </div>
-      <div className='max-w-7xl mx-auto grid grid-cols-4 gap-4'>
+
+      <div className="max-w-7xl mx-auto grid grid-cols-4 gap-4">
         {filteredQuizzes.length === 0 ? (
           <p>Không có quiz nào</p>
         ) : (
-          filteredQuizzes.map(question => (
+          filteredQuizzes.map(quiz => (
             <QuizItem
-              key={question._id}
-              quiz={question}
-              onEdit={() => handleEdit(question)}
-              onDelete={() => setQuizzes(prev => prev.filter(item => item._id !== question._id))}
+              key={quiz._id}
+              quiz={quiz}
+              onEdit={() => handleEdit(quiz)}
+              onDelete={async () => {
+                await deleteQuizById(quiz._id);
+                fetchQuizzes();
+              }}
             />
           ))
         )}
       </div>
-
 
       <Modal isOpen={isModalOpen} onClose={handleModalClose}>
         <QuizForm quiz={editQuiz} onSuccess={handleFormSuccess} />

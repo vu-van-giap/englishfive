@@ -8,7 +8,7 @@ import {
   createQuiz,
   updateQuiz,
   deleteQuizById
-} from "../services/quiz";
+} from '../../services/quiz';
 
 export default function QuizList() {
   const [quizzes, setQuizzes] = useState([]);

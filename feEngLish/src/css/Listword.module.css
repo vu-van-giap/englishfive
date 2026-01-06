@@ -1,0 +1,66 @@
+.container_word{
+    background-color: rgb(67, 252, 67);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+.new_word{
+    width: 1200px;
+    height: 100px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 5px;
+    padding: 3px;
+    color: white;
+
+}
+.new_word p{
+    width: auto;
+    max-width: 535px;
+    max-height: 100px;
+}
+.content_word{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+.content_word span {
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+    background-color: blueviolet;
+    border-radius: 30px;
+}
+
+.content_word h4{
+    color: white;
+    font-weight: bold;
+}
+.content_word h5 {
+    color: white;
+}
+.content_word p {
+    color: rgb(177, 96, 244);
+}
+.edit{
+    padding: 3px 8px;
+    background-color: rgb(142, 91, 243);
+    border-radius: 5px;
+    color: white;
+    margin-right: 5px;
+}
+.delete{
+    padding: 3px 8px;
+    background-color: rgb(216, 58, 58);
+    border-radius: 5px;
+    color: white;
+}
+button:hover{
+    cursor: pointer;
+}

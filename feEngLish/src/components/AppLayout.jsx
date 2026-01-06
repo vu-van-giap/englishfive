@@ -14,10 +14,11 @@ import styles from "../css/AppLayOut.module.css";
 import ListUser from "./ListUser";
 import Appkhac from "./Gomlaiflashcard";
 import VocabsLayout from "./VocabsLayout";
-import LayoutTopicQuiz from "./LayoutTopicQuiz";
-import QuizListPage from "./QuizsList";
-import QuizDetailPage from "./QuizDetail";
-import QuizResultPage from "./QuizResultPage";
+import LayoutTopicQuiz from "./Quiz/LayoutTopicQuiz";
+import QuizListPage from "./Quiz/QuizsList";
+import QuizDetailPage from "./Quiz/QuizDetail";
+import QuizResultPage from "./Quiz/QuizResultPage";
+import QuizList from "./Quiz/QuizMgr";
 export const AppLayout = () => {
   return (
     <>
@@ -34,6 +35,7 @@ export const AppLayout = () => {
         <Route path="/quiz/topic/:topic" element={<QuizListPage />} />
         <Route path="/quiz/:id" element={<QuizDetailPage />} />
         <Route path="/quiz/:id/result" element={<QuizResultPage />} />
+        <Route path="/quiz_manager" element={<QuizList />} />
         {/* End Quiz */}
         <Route path="/vocab" element={<VocabsLayout />} />
         <Route path="/show_user" element={<ListUser />} />

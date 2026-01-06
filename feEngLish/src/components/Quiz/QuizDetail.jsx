@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuizDetail } from "../hooks/useQuizDetail";
+import { useQuizDetail } from "../../hooks/useQuizDetail";
 
 const QuizDetailPage = () => {
   const { id } = useParams();

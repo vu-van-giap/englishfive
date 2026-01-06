@@ -93,6 +93,14 @@ export default function Header() {
               >
                 Quiz
               </a>
+              
+              <a
+                href="/quiz_manager"
+                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
+              >
+                Manager Quiz
+              </a>
+              
               <a
                 href="/vocab"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"

@@ -314,7 +314,7 @@ function validateQuizData({ title, topic, questions, totalScore, createdBy, fini
         ...quiz,
         topicImage // Vẫn thêm cho từng quiz nếu cần
       }))
-    };
+      };
   } catch (error) {
     fastify.log.error(`Lỗi lấy quiz theo topic ${topic}:`, error);
     throw new FastifyError('Không thể lấy quiz theo topic.');

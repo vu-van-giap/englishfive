@@ -218,7 +218,6 @@ const FlashcardList = () => {
                 </div>
               )}
               <div className="text-gray-500 text-sm mt-3 mb-4">
-                <span>User ID: {card.userId}</span> •
                 <span className="ml-2">
                   Created: {new Date(card.createdAt).toLocaleDateString()}
                 </span>

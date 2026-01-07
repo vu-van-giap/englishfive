@@ -6,7 +6,6 @@ const EditFlashcard = ({ card, onSuccess, onCancel }) => {
     front: card.front || "",
     back: card.back || "",
     topic: card.topic || "",
-    userId: card.userId || "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -30,11 +29,6 @@ const EditFlashcard = ({ card, onSuccess, onCancel }) => {
 
     if (!formData.back.trim()) {
       setMessage({ type: "error", text: "Back is required" });
-      return;
-    }
-
-    if (!formData.userId.trim()) {
-      setMessage({ type: "error", text: "User ID is required" });
       return;
     }
 
@@ -133,29 +127,6 @@ const EditFlashcard = ({ card, onSuccess, onCancel }) => {
             placeholder="e.g., Vocabulary, Grammar..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
           />
-        </div>
-
-        {/* User ID input */}
-        <div>
-          <label
-            htmlFor="userId"
-            className="block text-gray-700 font-semibold mb-2"
-          >
-            User ID (Required):
-          </label>
-          <input
-            type="text"
-            id="userId"
-            name="userId"
-            value={formData.userId}
-            onChange={handleChange}
-            placeholder="Enter valid MongoDB ObjectId"
-            required
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
-          />
-          <p className="text-sm text-gray-500 mt-2">
-            Current User ID: {card.userId}
-          </p>
         </div>
 
         {/* Message display */}

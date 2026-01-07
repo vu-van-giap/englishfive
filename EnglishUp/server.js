@@ -14,7 +14,7 @@ const flashcardRoutes = require('./routes/flashcards');
 
 // Đăng ký plugin để phục vụ tệp tĩnh
 fastify.register(require('@fastify/static'), {
-  root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
+  root: require('path').join(__dirname, '../feEngLish/public'), // Đường dẫn đến build của React
   prefix: '/static', // Phục vụ từ root
 });
 

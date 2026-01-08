@@ -35,31 +35,26 @@ async function flashcardModel(fastify) {
         const front = data.front ? String(data.front).trim() : '';
         const back = data.back ? String(data.back).trim() : '';
         const topic = (data.topic === null || data.topic === undefined) ? null : String(data.topic).trim();
-        const userId = data.userId ? String(data.userId).trim() : '';
-        if (topic === '') return { front, back, topic: null, userId };
-        return { front, back, topic, userId };
+        if (topic === '') return { front, back, topic: null };
+        return { front, back, topic };
     }; 
 
     return {
         /**
         * Tạo flashcard mới
-        * @param {{front: string, back: string, topic?: string, userId: string}} data
+        * @param {{front: string, back: string, topic?: string}} data
         * @returns {Promise<ObjectId>}        
         */
        async createFlashcard(data) {
         try {
-            const { front, back, topic, userId } = normalizeInput(data);
-            if (!front || !back || !userId) {
-                throw new Error('Front, back, and userId are required');
-            }
-            if (!isValidId(userId)) {
-                throw new Error('Invalid userId');
+            const { front, back, topic } = normalizeInput(data);
+            if (!front || !back) {
+                throw new Error('Front and back are required');
             }
             const doc = {
                 front,
                 back,
                 topic,
-                userId: new ObjectId(userId),
                 createdAt: new Date(),
                 updatedAt: new Date()
             };

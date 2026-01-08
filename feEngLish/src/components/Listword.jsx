@@ -3,6 +3,7 @@ import styles from "../css/Listword.module.css";
 import { useEffect, useState } from "react";
 import ModalWord from "./ModalWord";
 import { toast } from "react-toastify";
+import { RssIcon } from "@heroicons/react/16/solid";
 
 const ListWord = () => {
   const [listword, setListWord] = useState([]);

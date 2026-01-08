@@ -8,6 +8,7 @@ const ModalWord = ({ isOpen, onClose, word, onSubmit }) => {
         <div className="flex justify-between items-center border-b pb-4">
           <h3 className="text-lg font-semibold">Update Word</h3>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-500 hover:text-black"
           >

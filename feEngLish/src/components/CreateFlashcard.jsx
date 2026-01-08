@@ -6,7 +6,6 @@ const CreateFlashcard = ({ onSuccess }) => {
     front: "",
     back: "",
     topic: "",
-    userId: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -24,12 +23,11 @@ const CreateFlashcard = ({ onSuccess }) => {
 
     if (
       !formData.front.trim() ||
-      !formData.back.trim() ||
-      !formData.userId.trim()
+      !formData.back.trim()
     ) {
       setMessage({
         type: "error",
-        text: "Front, Back, and User ID are required",
+        text: "Front and Back are required",
       });
       return;
     }
@@ -50,7 +48,6 @@ const CreateFlashcard = ({ onSuccess }) => {
         front: "",
         back: "",
         topic: "",
-        userId: "",
       });
 
       if (onSuccess) {
@@ -130,29 +127,6 @@ const CreateFlashcard = ({ onSuccess }) => {
             placeholder="e.g., Vocabulary, Grammar..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
           />
-        </div>
-
-        {/* User ID input (VẪN GIỮ LẠI THEO YÊU CẦU BACKEND) */}
-        <div>
-          <label
-            htmlFor="userId"
-            className="block text-gray-700 font-semibold mb-2"
-          >
-            User ID (Required):
-          </label>
-          <input
-            type="text"
-            id="userId"
-            name="userId"
-            value={formData.userId}
-            onChange={handleChange}
-            placeholder="Enter valid MongoDB ObjectId (e.g., 65f8a1b2c3d4e5f6a7b8c9d0)"
-            required
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
-          />
-          <p className="text-sm text-gray-500 mt-2">
-            Note: User ID must be a valid MongoDB ObjectId (24 hex characters)
-          </p>
         </div>
 
         {/* Message display */}

@@ -14,3 +14,17 @@ export const getQuizById = async (id) => {
     const res = await api.get(`/quiz/${id}`);
     return res.data;
 };
+export const createQuiz = async (data) => {
+  const res = await api.post('/quiz', data);
+  return res.data;
+};
+
+export const updateQuiz = async (id, data) => {
+  const res = await api.put(`/quiz/${id}`, data);
+  return res.data;
+};
+
+export const deleteQuizById = async (id) => {
+  const res = await api.delete(`/quiz/${id}`);
+  return res.data;
+};

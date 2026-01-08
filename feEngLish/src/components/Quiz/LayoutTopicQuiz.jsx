@@ -1,4 +1,4 @@
-import { useTopic } from "../hooks/useTopic";
+import { useTopic } from "../../hooks/useTopic";
 import TopicCard from "./TopicCard";
 const LayoutTopicQuiz = ({onSelect}) => {
     const {topics} = useTopic();

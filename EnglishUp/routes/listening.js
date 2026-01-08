@@ -148,28 +148,6 @@ async function listeningRoutes(fastify, options) {
     }
   });
 
-  // GET /listening/:id: Lấy chi tiết bài tập (không có đáp án)
-  fastify.get('/:id', {
-    onRequest: auth
-  }, async (req, rep) => {
-    try {
-      const { id } = req.params;
-      const exercise = await Listening.getExerciseById(id, false);
-
-      return rep.send({
-        success: true,
-        data: exercise
-      });
-    } catch (err) {
-      fastify.log.error('GET /listening/:id error:', err);
-      const code = err.statusCode || 500;
-      return rep.code(code).send({
-        success: false,
-        message: err.message || 'Internal Server Error'
-      });
-    }
-  });
-
   // POST /listening/submit: Nộp bài và chấm điểm
   fastify.post('/submit', {
     schema: submitAnswersSchema,
@@ -237,6 +215,141 @@ async function listeningRoutes(fastify, options) {
       return rep.code(code).send({
         success: false,
         message: err.message || 'Internal Server Error'
+      });
+    }
+  });
+
+  // POST /listening/upload-audio: Upload file audio
+  fastify.post('/upload-audio', {
+    onRequest: auth
+  }, async (req, rep) => {
+    try {
+      // 1. Check if admin
+      if (req.user.role !== 'admin') {
+        return rep.code(403).send({
+          success: false,
+          message: 'Only admin can upload audio files'
+        });
+      }
+
+      // 2. Get uploaded file
+      const data = await req.file();
+      
+      if (!data) {
+        return rep.code(400).send({
+          success: false,
+          message: 'No file uploaded. Please select a file.'
+        });
+      }
+
+      // 3. Validate file type
+      const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/m4a'];
+      if (!allowedTypes.includes(data.mimetype)) {
+        return rep.code(400).send({
+          success: false,
+          message: `Invalid file type: ${data.mimetype}. Only audio files (mp3, wav, ogg, m4a) are allowed.`
+        });
+      }
+
+      // 4. Validate file size (already handled by multipart config, but double check)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (data.file.bytesRead > maxSize) {
+        return rep.code(400).send({
+          success: false,
+          message: 'File too large. Maximum size is 10MB.'
+        });
+      }
+
+      // 5. Generate unique filename
+      const timestamp = Date.now();
+      const originalName = data.filename
+        .replace(/\s+/g, '-')           // Replace spaces with dashes
+        .replace(/[^a-zA-Z0-9.-]/g, ''); // Remove special characters
+      const filename = `${timestamp}-${originalName}`;
+      
+      // 6. Define file path
+      const fs = require('fs');
+      const path = require('path'); 
+      const filepath = path.join(__dirname, '../uploads/audio', filename);
+
+      // 7. Save file to disk
+      const pump = require('util').promisify(require('stream').pipeline);
+      await pump(data.file, fs.createWriteStream(filepath));
+
+      // 8. Generate accessible URL
+      const audioUrl = `/uploads/audio/${filename}`;
+      const fullUrl = `http://localhost:3000${audioUrl}`;
+
+      fastify.log.info(`Audio file uploaded successfully: ${filename}`);
+
+      // 9. Return success response
+      return rep.code(201).send({
+        success: true,
+        message: 'Audio file uploaded successfully',
+        audioUrl: audioUrl,          // Relative URL
+        fullUrl: fullUrl,             // Full URL for testing
+        filename: filename,
+        size: data.file.bytesRead,
+        mimetype: data.mimetype
+      });
+
+    } catch (err) {
+      fastify.log.error('POST /listening/upload-audio error:', err);
+      return rep.code(500).send({
+        success: false,
+        message: 'Failed to upload file',
+        error: err.message
+      });
+    }
+  });
+
+  // DELETE /listening/delete-audio: Xóa file audio
+  fastify.delete('/delete-audio', {
+    onRequest: auth,
+    body: {
+      type: 'object',
+      required: ['filename'],
+      properties: {
+        filename: { type: 'string', minLength: 1 }
+      }
+    }
+  }, async (req, rep) => {
+    try {
+      if (req.user.role !== 'admin') {
+        return rep.code(403).send({
+          success: false,
+          message: 'Only admin can delete audio files'
+        });
+      }
+
+      const { filename } = req.body;
+      const fs = require('fs');
+      const path = require('path');
+      const filepath = path.join(__dirname, '../uploads/audio', filename);
+
+      // Check if file exists
+      if (!fs.existsSync(filepath)) {
+        return rep.code(404).send({
+          success: false,
+          message: 'File not found'
+        });
+      }
+
+      // Delete file
+      fs.unlinkSync(filepath);
+
+      fastify.log.info(`Audio file deleted: ${filename}`);
+
+      return rep.send({
+        success: true,
+        message: 'Audio file deleted successfully'
+      });
+
+    } catch (err) {
+      fastify.log.error('DELETE /listening/delete-audio error:', err);
+      return rep.code(500).send({
+        success: false,
+        message: 'Failed to delete file'
       });
     }
   });
@@ -318,6 +431,129 @@ async function listeningRoutes(fastify, options) {
       });
     }
   });
+
+  // DELETE /listening/:id: Xóa bài tập (admin only)
+  fastify.delete('/:id', {
+    onRequest: auth,
+    params: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
+      }
+    }
+  }, async (req, rep) => {
+    try {
+      // Check if admin
+      if (req.user.role !== 'admin') {
+        return rep.code(403).send({
+          success: false,
+          message: 'Only admin can delete exercises'
+        });
+      }
+
+      const { id } = req.params;
+      const success = await Listening.deleteExercise(id);
+
+      if (success) {
+        return rep.send({
+          success: true,
+          message: 'Exercise deleted successfully'
+        });
+      } else {
+        return rep.code(404).send({
+          success: false,
+          message: 'Exercise not found'
+        });
+      }
+    } catch (err) {
+      fastify.log.error('DELETE /listening/:id error:', err);
+      const code = err.statusCode || 500;
+      return rep.code(code).send({
+        success: false,
+        message: err.message || 'Internal Server Error'
+      });
+    }
+  });
+
+  // PUT /listening/:id: Cập nhật bài luyện nghe (admin only)
+  fastify.put('/:id', {
+    onRequest: auth,
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
+        }
+      },
+    }
+  }, async (req, rep) => {
+    try {
+      // Check admin
+      if (req.user.role !== 'admin') {
+        return rep.code(403).send({
+          success: false,
+          message: 'Only admin can update exercises'
+        });
+      }
+
+      const { id } = req.params;
+      const updateData = req.body;
+
+      // Không cho body rỗng
+      if (!updateData || Object.keys(updateData).length === 0) {
+        return rep.code(400).send({
+          success: false,
+          message: 'No data provided for update'
+        });
+      }
+
+      const updated = await Listening.updateExercise(id, updateData);
+
+      if (!updated) {
+        return rep.code(404).send({
+          success: false,
+          message: 'Exercise not found'
+        });
+      }
+
+      return rep.send({
+        success: true,
+        message: 'Exercise updated successfully'
+      });
+    } catch (err) {
+      fastify.log.error('PUT /listening/:id error:', err);
+      const code = err.statusCode || 500;
+      return rep.code(code).send({
+        success: false,
+        message: err.message || 'Internal Server Error'
+      });
+    }
+  });
+
+
+  // GET /listening/:id: Lấy chi tiết bài tập (không có đáp án)
+    fastify.get('/:id', {
+      onRequest: auth
+    }, async (req, rep) => {
+      try {
+        const { id } = req.params;
+        const exercise = await Listening.getExerciseById(id, false);
+
+        return rep.send({
+          success: true,
+          data: exercise
+        });
+      } catch (err) {
+        fastify.log.error('GET /listening/:id error:', err);
+        const code = err.statusCode || 500;
+        return rep.code(code).send({
+          success: false,
+          message: err.message || 'Internal Server Error'
+        });
+      }
+    });
 
   // Helper: Feedback
   function getFeedback(score) {

@@ -12,21 +12,30 @@ const pronunciationRoutes = require('./routes/pronunciation');
 const listeningRoutes = require('./routes/listening');
 const flashcardRoutes = require('./routes/flashcards');
 
-// // Đăng ký plugin để phục vụ tệp tĩnh
-// fastify.register(require('@fastify/static'), {
-//   root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
-//   prefix: '/static', // Phục vụ từ root
-// });
+
+// Đăng ký plugin để phục vụ tệp tĩnh
+fastify.register(require('@fastify/static'), {
+  root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
+  prefix: '/', // Phục vụ từ root
+});
+
+//Serve static files từ folder uploads
+fastify.register(require('@fastify/static'), {
+  root: path.join(__dirname, 'uploads'),
+  prefix: '/uploads/',
+  decorateReply: false
+});
 
 // Plugins cần thiết
 fastify.register(require('@fastify/formbody'));
 fastify.register(require('@fastify/multipart'), {
-  limits: { fileSize: 5 * 1024 * 1024 } // giới hạn 5MB
+  limits: { fileSize: 10 * 1024 * 1024 } // giới hạn 10MB
 });
 fastify.register(require('@fastify/mongodb'), {
   url: 'mongodb://localhost:27017/EnglishUp',
   forceClose: true,
 });
+
 // Cấu hình CORS để cho phép frontend truy cập API
 fastify.register(require('@fastify/cors'), {
   origin: '*',

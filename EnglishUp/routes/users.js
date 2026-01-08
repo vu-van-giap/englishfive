@@ -4,6 +4,7 @@ const { createHmac, randomBytes } = require('crypto');
 const auth = require('../auth-hook');
 const oth = require('../oth-hook');
 
+
 async function userRoutes(fastify, options) {
 
   fastify.get('/', { onRequest: auth }, async (req, reply) => {

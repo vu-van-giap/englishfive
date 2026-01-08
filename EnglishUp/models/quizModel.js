@@ -138,6 +138,7 @@ function validateQuizData({ title, topic, questions, totalScore, createdBy, fini
 
         const doc = {
           ...validatedData,
+          totalQuestions: validatedData.questions.length,
           createdAt: new Date(),
         };
 

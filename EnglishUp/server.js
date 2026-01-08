@@ -12,11 +12,11 @@ const pronunciationRoutes = require('./routes/pronunciation');
 const listeningRoutes = require('./routes/listening');
 const flashcardRoutes = require('./routes/flashcards');
 
-// Đăng ký plugin để phục vụ tệp tĩnh
-fastify.register(require('@fastify/static'), {
-  root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
-  prefix: '/static', // Phục vụ từ root
-});
+// // Đăng ký plugin để phục vụ tệp tĩnh
+// fastify.register(require('@fastify/static'), {
+//   root: require('path').join(__dirname, '../feEnglish/public'), // Đường dẫn đến build của React
+//   prefix: '/static', // Phục vụ từ root
+// });
 
 // Plugins cần thiết
 fastify.register(require('@fastify/formbody'));

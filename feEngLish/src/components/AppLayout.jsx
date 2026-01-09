@@ -13,12 +13,19 @@ import clsx from "clsx";
 import styles from "../css/AppLayOut.module.css";
 import ListUser from "./ListUser";
 import Appkhac from "./Gomlaiflashcard";
-import VocabsLayout from "./VocabsLayout";
+import VocabsLayout from "./Vocab/VocabHome";
 import LayoutTopicQuiz from "./Quiz/LayoutTopicQuiz";
 import QuizListPage from "./Quiz/QuizsList";
 import QuizDetailPage from "./Quiz/QuizDetail";
 import QuizResultPage from "./Quiz/QuizResultPage";
 import QuizList from "./Quiz/QuizMgr";
+
+// Import các component Vocab
+import VocabHome from "./Vocab/VocabHome";
+import VocabTopicPage from "./Vocab/VocabTopicPage";
+import VocabDetailPage from "./Vocab/VocabDetailPage";
+import VocabSearchPage from "./Vocab/VocabSearchPage";
+
 export const AppLayout = () => {
   return (
     <>
@@ -30,6 +37,7 @@ export const AppLayout = () => {
         {/* <Route path="/createword" element={<ProtectedRoute><CreateWord /></ProtectedRoute>} /> */}
         <Route path="/createword" element={<CreateWord />} />
         <Route path="/show_word" element={<ListWord />} />
+
         {/* Quiz */}
         <Route path="/quiz_topic" element={<LayoutTopicQuiz />} />
         <Route path="/quiz/topic/:topic" element={<QuizListPage />} />
@@ -37,7 +45,14 @@ export const AppLayout = () => {
         <Route path="/quiz/:id/result" element={<QuizResultPage />} />
         <Route path="/quiz_manager" element={<QuizList />} />
         {/* End Quiz */}
-        <Route path="/vocab" element={<VocabsLayout />} />
+
+        {/* Vocab */}
+        <Route path="/vocab" element={<VocabHome />} />
+        <Route path="/vocab/search" element={<VocabSearchPage />} />
+        <Route path="/vocab/topic/:topic" element={<VocabTopicPage />} />
+        <Route path="/vocab/:id" element={<VocabDetailPage />} />
+        {/* End Vocab */}
+
         <Route path="/show_user" element={<ListUser />} />
         <Route path="/xemfl" element={<Appkhac />} />
       </Routes>

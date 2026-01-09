@@ -1,98 +1,35 @@
-import React, { useEffect, useState } from "react";
-import Modal from "./Modal";
-import QuizForm from "./ModalQuiz";
-import QuizItem from "./QuizItem";
-import TopicFilter from "./TopicFilter";
-import {
-  getAllQuiz,
-  createQuiz,
-  updateQuiz,
-  deleteQuizById
-} from '../../services/quiz';
+import { useParams, Link } from "react-router-dom";
+import { useQuizByTopic } from "../../hooks/useQuizByTopic";
 
-export default function QuizList() {
-  const [quizzes, setQuizzes] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editQuiz, setEditQuiz] = useState(null);
-  const [topicFilter, setTopicFilter] = useState("");
+const QuizListPage = () => {
+  const { topic } = useParams();
+  const data = useQuizByTopic(topic);
 
-  useEffect(() => {
-    fetchQuizzes();
-  }, []);
-
-  const fetchQuizzes = async () => {
-    const res = await getAllQuiz();
-    if (res?.success) setQuizzes(res.data);
-  };
-
-  const handleAddNew = () => {
-    setEditQuiz(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEdit = (quiz) => {
-    setEditQuiz(quiz);
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setEditQuiz(null);
-  };
-
-  const handleFormSuccess = async (quizData) => {
-    if (editQuiz) {
-      await updateQuiz(editQuiz._id, quizData);
-    } else {
-      await createQuiz(quizData);
-    }
-    setIsModalOpen(false);
-    setEditQuiz(null);
-    fetchQuizzes();
-  };
-
-  const filteredQuizzes = topicFilter
-    ? quizzes.filter(q => q.topic === topicFilter)
-    : quizzes;
+  if (!data) return <p>Loading...</p>;
 
   return (
-    <div>
-      <div className="bg-[#f0f9ff] h-[170px] flex items-center justify-center">
-        <h2 className="text-5xl font-bold">Trang quản lý Quiz</h2>
+    <div className="max-w-7xl mx-auto py-10">
+      <h1 className="text-4xl font-bold mb-6">{data.topic}</h1>
+
+      <div className="grid grid-cols-3 gap-6">
+        {data.quizzes.map(quiz => (
+          <Link key={quiz._id} to={`/quiz/${quiz._id}`}>
+            <div className="border rounded-lg p-4 hover:shadow-lg transition">
+              <img
+                src={quiz.topicImage}
+                className="w-full h-40 object-cover rounded"
+                alt=""
+              />
+              <h3 className="text-xl mt-3 font-semibold">{quiz.title}</h3>
+              <p className="text-gray-600">
+                {quiz.questions.length} questions
+              </p>
+            </div>
+          </Link>
+        ))}
       </div>
-
-      <div className="flex gap-4 p-4">
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleAddNew}
-        >
-          Tạo Quiz Mới
-        </button>
-
-        <TopicFilter value={topicFilter} onChange={setTopicFilter} />
-      </div>
-
-      <div className="max-w-7xl mx-auto grid grid-cols-4 gap-4">
-        {filteredQuizzes.length === 0 ? (
-          <p>Không có quiz nào</p>
-        ) : (
-          filteredQuizzes.map(quiz => (
-            <QuizItem
-              key={quiz._id}
-              quiz={quiz}
-              onEdit={() => handleEdit(quiz)}
-              onDelete={async () => {
-                await deleteQuizById(quiz._id);
-                fetchQuizzes();
-              }}
-            />
-          ))
-        )}
-      </div>
-
-      <Modal isOpen={isModalOpen} onClose={handleModalClose}>
-        <QuizForm quiz={editQuiz} onSuccess={handleFormSuccess} />
-      </Modal>
     </div>
   );
-}
+};
+
+export default QuizListPage;

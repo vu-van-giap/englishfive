@@ -1,4 +1,3 @@
-// src/components/Vocab/SearchBar.jsx
 import React, { useState } from 'react';
 
 const SearchBar = ({ onSearch }) => {

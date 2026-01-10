@@ -1,4 +1,3 @@
-// src/pages/Vocab/VocabSearchPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {getTopics, getAllVocabs, getVocabById, getVocabsByTopic } from '../../services/vocabs';

@@ -7,7 +7,6 @@ export default function VocabList({ topic, onEdit }) {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    // Mock fetch vocab theo topic
     const mockData = [
       { _id: "1", word: "Hello", meaning: "Xin chào", examples: ["Hello world!"], topic },
       { _id: "2", word: "Food", meaning: "Thức ăn", examples: ["I love food"], topic }

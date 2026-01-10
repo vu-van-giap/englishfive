@@ -1,4 +1,3 @@
-// src/components/Vocab/VocabModal.jsx
 import React, { useState, useEffect } from 'react';
 import { getTopics } from '../../services/vocabs'; // Thêm import service
 

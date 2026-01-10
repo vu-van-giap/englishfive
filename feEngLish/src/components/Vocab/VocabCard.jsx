@@ -1,4 +1,3 @@
-// src/components/Vocab/VocabCard.jsx
 import React from 'react';
 
 const VocabCard = ({ vocab, onEdit, onDelete, onView }) => {

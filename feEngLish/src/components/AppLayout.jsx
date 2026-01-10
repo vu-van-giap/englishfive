@@ -53,6 +53,8 @@ export const AppLayout = () => {
         <Route path="/vocab/:id" element={<VocabDetailPage />} />
         {/* End Vocab */}
 
+        {/* Listening */}
+    
         <Route path="/show_user" element={<ListUser />} />
         <Route path="/xemfl" element={<Appkhac />} />
       </Routes>

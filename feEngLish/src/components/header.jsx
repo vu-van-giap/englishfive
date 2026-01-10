@@ -111,7 +111,7 @@ export default function Header() {
                 href="/show_user"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Audio
+                 Listening
               </a>
               
             </div>

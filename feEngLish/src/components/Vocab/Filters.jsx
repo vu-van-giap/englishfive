@@ -1,4 +1,3 @@
-// src/components/Vocab/Filters.jsx
 import React, { useState, useEffect } from 'react';
 import { getTopics } from '../../services/vocabs';
 
@@ -37,7 +36,6 @@ const Filters = ({ filters, onFilterChange, topics: propTopics }) => {
 
   return (
     <div className="flex flex-wrap gap-4 items-end">
-      {/* Topic Filter */}
       <div className="flex-1 min-w-[200px]">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Lọc theo chủ đề
@@ -60,7 +58,6 @@ const Filters = ({ filters, onFilterChange, topics: propTopics }) => {
         )}
       </div>
 
-      {/* Level Filter */}
       <div className="flex-1 min-w-[150px]">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Lọc theo trình độ

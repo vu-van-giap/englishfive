@@ -1,4 +1,3 @@
-// src/pages/Vocab/VocabHome.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopicGrid from '../../components/Vocab/TopicGrid';
@@ -8,7 +7,6 @@ const VocabHome = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Hero Section */}
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
           Học từ vựng tiếng Anh
@@ -25,7 +23,6 @@ const VocabHome = () => {
           </button>
         </div>
       </div>
-      {/* Topic Grid */}
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Chủ đề từ vựng</h2>

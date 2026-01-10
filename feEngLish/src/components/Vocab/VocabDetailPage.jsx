@@ -1,4 +1,3 @@
-// src/pages/Vocab/VocabDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getVocabById, getTopics, getVocabsByTopic } from '../../services/vocabs';
@@ -22,12 +21,10 @@ const VocabDetailPage = () => {
       const data = await getVocabById(id);
       setVocab(data);
       
-      // Load topic info
       const topics = await getTopics();
       const topic = topics.find(t => t.value === data.topic);
       setTopicInfo(topic);
       
-      // Load related vocabs
       if (data.topic) {
         const related = await getVocabsByTopic(data.topic, 1, 4);
         setRelatedVocabs(related.items.filter(v => v._id !== id));
@@ -64,7 +61,6 @@ const VocabDetailPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Back button */}
       <button 
         onClick={() => navigate(-1)}
         className="text-blue-500 hover:text-blue-600 mb-8 flex items-center gap-1"
@@ -73,7 +69,6 @@ const VocabDetailPage = () => {
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main content */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow p-8">
             <div className="flex justify-between items-start mb-6">
@@ -113,7 +108,6 @@ const VocabDetailPage = () => {
               </div>
             </div>
 
-            {/* Tags */}
             {vocab.tags && vocab.tags.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-sm font-semibold text-gray-600 mb-2">TAGS</h3>
@@ -149,9 +143,7 @@ const VocabDetailPage = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Related vocabs */}
           {relatedVocabs.length > 0 && (
             <div className="bg-white rounded-xl shadow p-6">
               <h3 className="text-lg font-bold text-gray-800 mb-4">
@@ -177,7 +169,6 @@ const VocabDetailPage = () => {
             </div>
           )}
 
-          {/* Study tips */}
           <div className="bg-blue-50 rounded-xl shadow p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-3">Mẹo học từ vựng</h3>
             <ul className="space-y-2">

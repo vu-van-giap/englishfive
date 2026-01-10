@@ -108,7 +108,7 @@ export default function Header() {
                 Vocab
               </a>
               <a
-                href="/show_user"
+                href="/listening"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
                  Listening

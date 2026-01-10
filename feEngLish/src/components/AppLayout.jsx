@@ -13,18 +13,22 @@ import clsx from "clsx";
 import styles from "../css/AppLayOut.module.css";
 import ListUser from "./ListUser";
 import Appkhac from "./Gomlaiflashcard";
-import VocabsLayout from "./Vocab/VocabHome";
-import LayoutTopicQuiz from "./Quiz/LayoutTopicQuiz";
-import QuizListPage from "./Quiz/QuizsList";
-import QuizDetailPage from "./Quiz/QuizDetail";
-import QuizResultPage from "./Quiz/QuizResultPage";
-import QuizList from "./Quiz/QuizMgr";
 
 // Import các component Vocab
 import VocabHome from "./Vocab/VocabHome";
 import VocabTopicPage from "./Vocab/VocabTopicPage";
 import VocabDetailPage from "./Vocab/VocabDetailPage";
 import VocabSearchPage from "./Vocab/VocabSearchPage";
+
+// Import Quiz components
+import LayoutTopicQuiz from "./Quiz/LayoutTopicQuiz";
+import QuizListPage from "./Quiz/QuizsList";
+import QuizDetailPage from "./Quiz/QuizDetail";
+import QuizResultPage from "./Quiz/QuizResultPage";
+import QuizList from "./Quiz/QuizMgr";
+
+// Import Listening component
+import ListeningPage from './Listening/ListeningPage';
 
 export const AppLayout = () => {
   return (
@@ -34,7 +38,6 @@ export const AppLayout = () => {
         <Route path="/" element={<Content />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/createword" element={<ProtectedRoute><CreateWord /></ProtectedRoute>} /> */}
         <Route path="/createword" element={<CreateWord />} />
         <Route path="/show_word" element={<ListWord />} />
 
@@ -54,7 +57,10 @@ export const AppLayout = () => {
         {/* End Vocab */}
 
         {/* Listening */}
-    
+        <Route path="/listening" element={<ListeningPage />} />
+        <Route path="/listening/history" element={<ListeningPage />} />
+        <Route path="/listening/stats" element={<ListeningPage />} />
+
         <Route path="/show_user" element={<ListUser />} />
         <Route path="/xemfl" element={<Appkhac />} />
       </Routes>

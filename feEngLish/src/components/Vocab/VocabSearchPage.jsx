@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {getTopics, getAllVocabs, getVocabById, getVocabsByTopic } from '../../services/vocabs';
+import {getTopics, getAllVocabs,createVocab,updateVocab,searchVocabs, deleteVocab, getVocabsByTopic } from '../../services/vocabs';
 import VocabCard from '../../components/Vocab/VocabCard';
 import VocabModal from '../../components/Vocab/VocabModal';
 import SearchBar from '../../components/Vocab/SearchBar';
@@ -143,6 +143,7 @@ const VocabSearchPage = () => {
         await updateVocab(editingVocab._id, data);
         toast.success('Cập nhật thành công!');
       } else {
+        console.log('Submitting new vocab:', data);
         await createVocab(data);
         toast.success('Thêm mới thành công!');
       }

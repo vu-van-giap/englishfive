@@ -15,6 +15,7 @@ const TopicGrid = () => {
     try {
       setLoading(true);
       const data = await getTopics();
+      console.log('Topics data:', data);
       setTopics(data);
     } catch (error) {
       console.error('Error loading topics:', error);
@@ -38,22 +39,26 @@ const TopicGrid = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
       {topics.map((topic) => (
-        <div 
-          key={topic.value} 
+        <div
+          key={topic.value}
           className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
           onClick={() => handleTopicClick(topic)}
         >
-          <div 
-            className="h-32 bg-cover bg-center relative"
-            style={{ backgroundImage: `url(${topic.imageUrl})` }}
-          >
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-              <span className="text-4xl">{topic.emoji}</span>
+          {/* Background image */}
+          <div
+            className="h-32 w-full bg-cover bg-center"
+            style={{ backgroundImage: `url("${topic.imageUrl}")` }}
+          />
+
+          {/* Label + Emoji + Button */}
+          <div className="p-4 flex flex-col items-center">
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-3xl">{topic.emoji}</span>
+              <h3 className="font-semibold text-gray-800">{topic.label}</h3>
             </div>
-          </div>
-          <div className="p-4">
-            <h3 className="font-semibold text-gray-800 text-center">{topic.label}</h3>
-            <button className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded-lg text-sm font-medium transition-colors">
+            <button
+              className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded-lg text-sm font-medium transition-colors"
+            >
               Xem từ vựng →
             </button>
           </div>

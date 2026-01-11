@@ -1,6 +1,6 @@
 //models vocabModel.js
 const { ObjectId } = require('mongodb');
-const topicsConfig = require('../config/topics');
+const topicsConfig = require('../config/topics.js'); // Danh sách chủ đề + ảnh
 const validTopics = topicsConfig.map(t => t.value);
 
 /**
@@ -126,6 +126,9 @@ async function vocabModel(fastify) {
         try {
             if (!isValidId(id)) return null;
             const doc = await collection.findOne({ _id: new ObjectId(id) });
+            if (doc) {
+                doc._id = doc._id.toString();
+            }
             return doc;
         }   catch (err) {
             fastify.log.error('Lỗi getVocabById:', err);
@@ -228,21 +231,24 @@ async function vocabModel(fastify) {
      */
     
     async deleteVocab(id) {
-        try {
-            if (!isValidId(id)) {
-                const e = new Error('Id không hợp lệ');
-                e.statusCode = 400;
-                throw e;
-            }
-            
-            const result = await collection.deleteOne({ _id: new ObjectId(id) });
-            fastify.log.info(`vocab xóa id=${id} deleted=${result.deletedCount}`);
-            return result.deletedCount > 0;
-        } catch (err) {
-            fastify.log.error('Lỗi deleteVocab:', err);
-            throw err;
+    try {
+        // Nếu id là object, lấy id.toString()
+        const idStr = typeof id === 'string' ? id : id.toString();
+
+        if (!isValidId(idStr)) {
+            const e = new Error('Id không hợp lệ');
+            e.statusCode = 400;
+            throw e;
         }
-    },
+
+        const result = await collection.deleteOne({ _id: new ObjectId(idStr) });
+        fastify.log.info(`vocab xóa id=${idStr} deleted=${result.deletedCount}`);
+        return result.deletedCount > 0;
+    } catch (err) {
+        fastify.log.error('Lỗi deleteVocab:', err);
+        throw err;
+    }
+},
 
     /**
      * Tạo index để tăng tốc tìm kiếm (gọi 1 lần khi app start)

@@ -43,6 +43,7 @@ export const getVocabById = async (id) => {
 export const createVocab = async (data) => {
     try {
         const response = await api.post('/vocab', data);
+        console.log('Creating vocab with data:', data);
         return response.data;
     } catch (error) {
         console.error('Error creating vocab:', error);

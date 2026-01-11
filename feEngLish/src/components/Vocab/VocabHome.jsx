@@ -14,15 +14,6 @@ const VocabHome = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Khám phá và học từ vựng theo chủ đề. Chọn chủ đề bạn quan tâm để bắt đầu học ngay!
           </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            onClick={() => navigate('/vocab/search')}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium text-lg"
-          >
-            🔍 Tìm kiếm từ vựng
-          </button>
-        </div>
       </div>
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">

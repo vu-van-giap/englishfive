@@ -5,7 +5,6 @@ const Filters = ({ filters, onFilterChange, topics: propTopics }) => {
   const [topics, setTopics] = useState(propTopics || []);
   const [loading, setLoading] = useState(!propTopics);
   
-  const levelOptions = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'other'];
 
   useEffect(() => {
     if (!propTopics) {
@@ -56,22 +55,6 @@ const Filters = ({ filters, onFilterChange, topics: propTopics }) => {
             ))}
           </select>
         )}
-      </div>
-
-      <div className="flex-1 min-w-[150px]">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Lọc theo trình độ
-        </label>
-        <select
-          value={filters.level}
-          onChange={(e) => handleChange('level', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        >
-          <option value="">Tất cả trình độ</option>
-          {levelOptions.map(level => (
-            <option key={level} value={level}>{level}</option>
-          ))}
-        </select>
       </div>
     </div>
   );

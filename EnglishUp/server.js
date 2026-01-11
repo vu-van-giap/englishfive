@@ -27,7 +27,7 @@ fastify.register(require('@fastify/mongodb'), {
 // Cấu hình CORS để cho phép frontend truy cập API
 fastify.register(require('@fastify/cors'), {
   origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
 

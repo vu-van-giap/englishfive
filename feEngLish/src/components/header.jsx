@@ -93,14 +93,14 @@ export default function Header() {
               >
                 Quiz
               </a>
-              
+
               <a
                 href="/quiz_manager"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
                 Manager Quiz
               </a>
-              
+
               <a
                 href="/vocab"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
@@ -108,11 +108,12 @@ export default function Header() {
                 Vocab
               </a>
               <a
-                href="/show_user"
+                href="/listening"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Audio
+                 Listening
               </a>
+              
             </div>
             {/*  */}
             <div className="hidden lg:flex lg:flex-1 justify-content-center ml-5 ">
@@ -201,6 +202,7 @@ export default function Header() {
                         >
                           Audio
                         </a>
+                        
                       </div>
                       <div className="py-6">
                         {token ? (

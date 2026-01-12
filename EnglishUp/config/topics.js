@@ -35,13 +35,13 @@ const topics = [
     value: 'education',
     label: 'Học tập',
     emoji: '🎓',
-    imageUrl: 'https://img.lovepik.com/photo/50114/4941.jpg_wh860.jpg' // lớp học, trường học
+    imageUrl: 'https://media.tapchigiaoduc.edu.vn/uploads/2024/07/01/news-pisa-1-1719777414.jpg' // lớp học, trường học
   },
   {
     value: 'health',
     label: 'Sức khỏe',
     emoji: '🏥',
-    imageUrl: 'https://img.lovepik.com/photo/45019/5129.jpg_wh860.jpg' // yoga, thể dục
+    imageUrl: 'https://nemkimcuong.vn/Media/Uploads/tin-tuc/suc%20khoe%20la%20tai%20san%20quy%20gia%20va%20quan%20trong%20nhat-01.jpg' // yoga, thể dục
   },
   {
     value: 'nature',

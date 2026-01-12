@@ -66,27 +66,14 @@ export default function Header() {
                 to="/"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Trang chủ
-              </Link>
-              <Link
-                to="/createword"
-                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
-              >
-                FlashCard
+                Home
               </Link>
               <Link
                 to="/xemfl"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Thẻ lật
+                Flashcard
               </Link>
-
-              {/* <a
-                href="/show_word"
-                className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
-              >
-                Quiz
-              </a> */}
               <Link
                 to="/quiz_topic"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
@@ -100,7 +87,6 @@ export default function Header() {
               >
                 Manager Quiz
               </Link>
-
               <Link
                 to="/vocab"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
@@ -108,10 +94,10 @@ export default function Header() {
                 Vocab
               </Link>
               <Link
-                to="/show_user"
+                to="/listening"
                 className="text-sm/6 font-semibold text-gray-900 mr-5 aa"
               >
-                Audio
+                Listening
               </Link>
             </div>
             {/*  */}

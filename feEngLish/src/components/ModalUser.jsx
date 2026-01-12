@@ -13,22 +13,15 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (isOpen && user && mode === "update") {
+    if (user && mode === "update") {
       setFormData({
-        username: user.username || "",
-        fullname: user.fullname || "",
-        role: user.role || "user",
+        username: user.username,
+        fullname: user.fullname,
+        role: user.role,
         password: "",
       });
-    }
-
-    if (isOpen && mode === "add") {
-      setFormData({
-        username: "",
-        fullname: "",
-        role: "user",
-        password: "",
-      });
+    } else {
+      setFormData({ username: "", fullname: "", role: "user", password: "" });
       setErrors({});
     }
   }, [user, mode, isOpen]);
@@ -42,30 +35,23 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
 
   const validate = () => {
     const newErrors = {};
-
     if (!formData.username.trim())
       newErrors.username = "Username không được để trống";
-
     if (!formData.fullname.trim())
       newErrors.fullname = "Full name không được để trống";
-
     if (mode === "add") {
+      if (!formData.role) newErrors.role = "Vui lòng chọn role";
       if (!formData.password)
         newErrors.password = "Password không được để trống";
       else if (formData.password.length < 6)
         newErrors.password = "Password phải ít nhất 6 ký tự";
-
-      if (!formData.role)
-        newErrors.role = "Vui lòng chọn role";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validate()) {
       toast.warning("Vui lòng kiểm tra lại form");
       return;
@@ -82,22 +68,19 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
         });
         toast.success("Cập nhật user thành công");
       }
-
       onSuccess();
       onClose();
     } catch (error) {
       toast.error("Có lỗi xảy ra");
-      console.error(error);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
       <div className="bg-white p-6 rounded w-[400px]">
         <h3 className="text-lg font-bold mb-4">
           {mode === "add" ? "Thêm User" : "Cập nhật User"}
         </h3>
-
         <form onSubmit={handleSubmit} className="grid gap-3">
           <div>
             <input
@@ -108,12 +91,9 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
               className="w-full border px-2 py-1 rounded"
             />
             {errors.username && (
-              <span className="text-red-500 text-sm">
-                {errors.username}
-              </span>
+              <span className="text-red-500 text-sm">{errors.username}</span>
             )}
           </div>
-
           <div>
             <input
               name="fullname"
@@ -123,9 +103,7 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
               className="w-full border px-2 py-1 rounded"
             />
             {errors.fullname && (
-              <span className="text-red-500 text-sm">
-                {errors.fullname}
-              </span>
+              <span className="text-red-500 text-sm">{errors.fullname}</span>
             )}
           </div>
 
@@ -159,9 +137,7 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
                   <option value="user">User</option>
                 </select>
                 {errors.role && (
-                  <span className="text-red-500 text-sm">
-                    {errors.role}
-                  </span>
+                  <span className="text-red-500 text-sm">{errors.role}</span>
                 )}
               </div>
             </>
@@ -175,7 +151,6 @@ const ModalUser = ({ isOpen, onClose, user, mode, onSuccess }) => {
             >
               Hủy
             </button>
-
             <button
               type="submit"
               className="bg-green-500 text-white px-4 py-2 rounded"

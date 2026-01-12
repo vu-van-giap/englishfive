@@ -21,10 +21,7 @@ const CreateFlashcard = ({ onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formData.front.trim() ||
-      !formData.back.trim()
-    ) {
+    if (!formData.front.trim() || !formData.back.trim()) {
       setMessage({
         type: "error",
         text: "Front and Back are required",

@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import Modal from './Modal';
-import QuizForm from './ModalQuiz';
-import QuizItem from './QuizItem';
-import TopicFilter from './TopicFilter';
+import React, { useEffect, useState } from "react";
+import Modal from "./Modal";
+import QuizForm from "./ModalQuiz";
+import QuizItem from "./QuizItem";
+import TopicFilter from "./TopicFilter";
 import {
   getAllQuiz,
   createQuiz,
   updateQuiz,
-  deleteQuizById
-} from '../../services/quiz';
+  deleteQuizById,
+} from "../../services/quiz";
 
-export default function QuizListManeger() {
+export default function QuizList() {
   const [quizzes, setQuizzes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editQuiz, setEditQuiz] = useState(null);
-  const [topicFilter, setTopicFilter] = useState('');
+  const [topicFilter, setTopicFilter] = useState("");
 
   useEffect(() => {
     fetchQuizzes();
@@ -53,7 +53,7 @@ export default function QuizListManeger() {
   };
 
   const filteredQuizzes = topicFilter
-    ? quizzes.filter(q => q.topic === topicFilter)
+    ? quizzes.filter((q) => q.topic === topicFilter)
     : quizzes;
 
   return (
@@ -79,7 +79,7 @@ export default function QuizListManeger() {
         {filteredQuizzes.length === 0 ? (
           <p>Không có quiz nào</p>
         ) : (
-          filteredQuizzes.map(quiz => (
+          filteredQuizzes.map((quiz) => (
             <QuizItem
               key={quiz._id}
               quiz={quiz}

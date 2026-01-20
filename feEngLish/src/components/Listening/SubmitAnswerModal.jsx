@@ -49,7 +49,7 @@ const SubmitAnswerModal = ({ isOpen, onClose, exercise, userAnswers, result }) =
     const feedback = getFeedback(result.score);
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 bg-opacity-50">
             <div className="flex items-center justify-center min-h-screen px-4 py-8">
                 <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
                     {/* Header */}

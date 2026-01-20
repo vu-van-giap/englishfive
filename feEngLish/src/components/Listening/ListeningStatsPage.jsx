@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import StatsCard from '../components/Listening/StatsCard';
-import LoadingSpinner from '../components/Common/LoadingSpinner';
+import StatsCard from './StatsCard';
+// import LoadingSpinner from '../components/Common/LoadingSpinner';
 import { getStats, getHistory } from '../../services/listening';
 
 const ListeningStatsPage = () => {
@@ -90,7 +90,7 @@ const ListeningStatsPage = () => {
         }
     ];
 
-    if (loading) return <LoadingSpinner />;
+    // if (loading) return <LoadingSpinner />;
     if (error) return <div className="text-center text-red-600 py-8">{error}</div>;
 
     return (

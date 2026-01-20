@@ -1,8 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../../services/listening';
 
 const ExerciseFormModal = ({ isOpen, onClose, onSubmit, exercise = null, mode = 'create' }) => {
+    const originalExerciseRef = useRef(null);
+
     const [formData, setFormData] = useState({
         title: '',
         audioUrl: '',
@@ -13,172 +14,271 @@ const ExerciseFormModal = ({ isOpen, onClose, onSubmit, exercise = null, mode = 
     });
 
     const [isUploading, setIsUploading] = useState(false);
-    const [errors, setErrors] = useState({});
 
     useEffect(() => {
+        if (!isOpen) return;
+
         if (exercise && mode === 'update') {
-            setFormData({
+            const data = {
                 title: exercise.title || '',
                 audioUrl: exercise.audioUrl || '',
                 transcript: exercise.transcript || '',
                 difficulty: exercise.difficulty || 'medium',
                 topic: exercise.topic || '',
                 blanks: exercise.blanks || [{ position: 0, answer: '', hint: '' }]
-            });
-        } else {
-            setFormData({
+            };
+
+            setFormData(data);
+            originalExerciseRef.current = data;
+        }
+
+        if (mode === 'create') {
+            const empty = {
                 title: '',
                 audioUrl: '',
                 transcript: '',
                 difficulty: 'medium',
                 topic: '',
                 blanks: [{ position: 0, answer: '', hint: '' }]
-            });
+            };
+
+            setFormData(empty);
+            originalExerciseRef.current = null;
         }
-    }, [exercise, mode]);
+    }, [isOpen, exercise, mode]);
 
     if (!isOpen) return null;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleBlankChange = (index, field, value) => {
         const newBlanks = [...formData.blanks];
-        newBlanks[index] = { ...newBlanks[index], [field]: value };
-
-        if (field === 'position') {
-            newBlanks[index][field] = parseInt(value) || 0;
-        }
-
-        setFormData(prev => ({
-            ...prev,
-            blanks: newBlanks
-        }));
+        newBlanks[index][field] = field === 'position' ? Number(value) : value;
+        setFormData(prev => ({ ...prev, blanks: newBlanks }));
     };
 
     const addBlank = () => {
-        const lastPosition = formData.blanks.length > 0
-            ? Math.max(...formData.blanks.map(b => b.position))
-            : -1;
-
         setFormData(prev => ({
             ...prev,
-            blanks: [...prev.blanks, { position: lastPosition + 1, answer: '', hint: '' }]
+            blanks: [...prev.blanks, { position: 0, answer: '', hint: '' }]
         }));
     };
 
     const removeBlank = (index) => {
         if (formData.blanks.length > 1) {
-            const newBlanks = formData.blanks.filter((_, i) => i !== index);
             setFormData(prev => ({
                 ...prev,
-                blanks: newBlanks
+                blanks: prev.blanks.filter((_, i) => i !== index)
             }));
         }
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!formData.title.trim()) newErrors.title = 'Tiêu đề không được để trống';
-        if (!formData.audioUrl.trim()) newErrors.audioUrl = 'URL audio không được để trống';
-        if (!formData.transcript.trim()) newErrors.transcript = 'Transcript không được để trống';
-
-        formData.blanks.forEach((blank, index) => {
-            if (!blank.answer.trim()) {
-                newErrors[`blank_${index}`] = 'Đáp án không được để trống';
-            }
-        });
-
-        return newErrors;
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const formErrors = validateForm();
-        if (Object.keys(formErrors).length > 0) {
-            setErrors(formErrors);
-            return;
-        }
-
-        setErrors({});
-        onSubmit(formData);
-    };
-
     const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (!file) return;
 
         setIsUploading(true);
-
         try {
-            const response = await uploadAudio(file);
-
-            if (response.success) {
-                setFormData(prev => ({
-                    ...prev,
-                    audioUrl: response.audioUrl
-                }));
-                alert('Upload audio thành công!');
+            const res = await uploadAudio(file);
+            if (res?.success && res.audioUrl) {
+                setFormData(prev => ({ ...prev, audioUrl: res.audioUrl }));
+                alert('Upload audio thành công');
+            } else {
+                alert(res?.message || 'Upload audio thất bại');
             }
-        } catch (error) {
-            console.error('Error uploading audio:', error);
-            alert('Upload thất bại. Vui lòng thử lại!');
+        } catch (err) {
+            console.error('Upload audio error', err);
+            alert('Upload audio thất bại');
         } finally {
             setIsUploading(false);
         }
     };
 
-    // ... rest of the component remains similar ...
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        // Validate required fields
+        if (!formData.title.trim()) {
+            alert('Vui lòng nhập tiêu đề bài tập');
+            return;
+        }
+        if (!formData.audioUrl.trim()) {
+            alert('Vui lòng nhập URL audio hoặc upload file');
+            return;
+        }
+        if (!formData.transcript.trim()) {
+            alert('Vui lòng nhập transcript');
+            return;
+        }
+        
+        // Validate blanks
+        for (let i = 0; i < formData.blanks.length; i++) {
+            const blank = formData.blanks[i];
+            if (!blank.answer.trim()) {
+                alert(`Vui lòng nhập đáp án cho chỗ trống ${i + 1}`);
+                return;
+            }
+        }
+        
+        onSubmit(formData);
+    };
 
     return (
-        // Modal JSX remains similar, just update the file upload handler
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-white/60 backdrop-blur-sm">
-            {/* ... rest of modal JSX ... */}
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center overflow-y-auto">
+            <div className="bg-white w-full max-w-3xl rounded-lg p-6 max-h-[90vh] overflow-y-auto">
+                <h2 className="text-xl font-bold mb-4">
+                    {mode === 'create' ? 'Tạo bài listening' : 'Cập nhật bài listening'}
+                </h2>
 
-            {/* Update the file upload section */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Audio URL *
-                </label>
-                <div className="flex space-x-2">
-                    <input
-                        type="text"
-                        name="audioUrl"
-                        value={formData.audioUrl}
-                        onChange={handleChange}
-                        className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.audioUrl ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                        placeholder="URL hoặc nhấn Upload"
-                    />
-                    <label className={`px-4 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-lg cursor-pointer hover:from-blue-600 hover:to-blue-700 transition flex items-center ${isUploading ? 'opacity-50' : ''}`}>
-                        {isUploading ? 'Đang tải...' : 'Upload'}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề *</label>
+                        <input
+                            name="title"
+                            value={formData.title}
+                            onChange={handleChange}
+                            placeholder="Tiêu đề bài tập"
+                            className="w-full border px-4 py-2 rounded"
+                            required
+                        />
+                    </div>
+
+                    {/* AUDIO */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Audio URL *</label>
+                        <input
+                            name="audioUrl"
+                            value={formData.audioUrl}
+                            onChange={handleChange}
+                            placeholder="Audio URL"
+                            className="w-full border px-4 py-2 rounded mb-2"
+                            required
+                        />
+                        <div className="text-sm text-gray-600 mb-2">Hoặc upload file:</div>
                         <input
                             type="file"
                             accept="audio/*"
                             onChange={handleFileUpload}
-                            className="hidden"
-                            disabled={isUploading}
+                            className="w-full"
                         />
-                    </label>
-                </div>
-                {errors.audioUrl && <p className="mt-2 text-sm text-red-600">
-                    {errors.audioUrl}
-                </p>}
-                {formData.audioUrl && (
-                    <p className="mt-2 text-sm text-green-600">
-                        Audio: {formData.audioUrl}
-                    </p>
-                )}
-            </div>
+                        {isUploading && <p className="text-sm text-blue-600">Đang upload...</p>}
+                    </div>
 
-            {/* ... rest of modal JSX ... */}
+                    {/* TRANSCRIPT */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Transcript *</label>
+                        <textarea
+                            name="transcript"
+                            value={formData.transcript}
+                            onChange={handleChange}
+                            placeholder="Transcript (có ___ cho chỗ trống)"
+                            className="w-full border px-4 py-2 rounded h-32"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* DIFFICULTY */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Độ khó</label>
+                            <select
+                                name="difficulty"
+                                value={formData.difficulty}
+                                onChange={handleChange}
+                                className="w-full border px-4 py-2 rounded"
+                            >
+                                <option value="easy">Dễ</option>
+                                <option value="medium">Trung bình</option>
+                                <option value="hard">Khó</option>
+                            </select>
+                        </div>
+
+                        {/* TOPIC */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Chủ đề</label>
+                            <input
+                                name="topic"
+                                value={formData.topic}
+                                onChange={handleChange}
+                                placeholder="Chủ đề"
+                                className="w-full border px-4 py-2 rounded"
+                            />
+                        </div>
+                    </div>
+
+                    {/* BLANKS */}
+                    <div>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-gray-700">Chỗ trống *</label>
+                            <button
+                                type="button"
+                                onClick={addBlank}
+                                className="text-sm text-blue-600 hover:text-blue-800"
+                            >
+                                + Thêm chỗ trống
+                            </button>
+                        </div>
+                        
+                        {formData.blanks.map((b, i) => (
+                            <div key={i} className="flex gap-2 mb-2 items-center">
+                                <div className="flex-1 grid grid-cols-3 gap-2">
+                                    <input
+                                        type="number"
+                                        value={b.position}
+                                        onChange={e => handleBlankChange(i, 'position', e.target.value)}
+                                        placeholder="Vị trí"
+                                        className="border px-2 py-1 rounded"
+                                        min="0"
+                                    />
+                                    <input
+                                        value={b.answer}
+                                        onChange={e => handleBlankChange(i, 'answer', e.target.value)}
+                                        placeholder="Đáp án *"
+                                        className="border px-2 py-1 rounded"
+                                        required
+                                    />
+                                    <input
+                                        value={b.hint}
+                                        onChange={e => handleBlankChange(i, 'hint', e.target.value)}
+                                        placeholder="Gợi ý"
+                                        className="border px-2 py-1 rounded"
+                                    />
+                                </div>
+                                {formData.blanks.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeBlank(i)}
+                                        className="px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
+                                    >
+                                        Xóa
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* ACTIONS */}
+                    <div className="flex justify-end gap-3 pt-4 border-t">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50"
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isUploading}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                        >
+                            {mode === 'create' ? 'Tạo bài tập' : 'Cập nhật'}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

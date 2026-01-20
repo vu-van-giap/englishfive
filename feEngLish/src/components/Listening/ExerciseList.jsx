@@ -1,19 +1,24 @@
-
 import React, { useState, useEffect } from 'react';
 import ExerciseFormModal from './ExerciseFormModal';
 import ExerciseDetailModal from './ExerciseDetailModal';
 import SubmitAnswerModal from './SubmitAnswerModal';
+import { toast } from "react-toastify";
 import {
     getExercises,
-    getExerciseById, deleteExercise, createExercise, updateExercise, submitAnswers, formatExerciseForApi, formatAnswersForApi
+    getExerciseById,
+    deleteExercise,
+    createExercise,
+    updateExercise,
+    submitAnswers,
+    formatExerciseForApi
 } from '../../services/listening';
 
 const ExerciseList = ({ user }) => {
     const [exercises, setExercises] = useState([]);
     const [filteredExercises, setFilteredExercises] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [apiError, setApiError] = useState(null);
 
-    // State for modals
     const [showFormModal, setShowFormModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -22,6 +27,7 @@ const ExerciseList = ({ user }) => {
     const [selectedExerciseForPractice, setSelectedExerciseForPractice] = useState(null);
     const [mode, setMode] = useState('create');
     const [userAnswers, setUserAnswers] = useState({});
+    const [submitResult, setSubmitResult] = useState(null);
 
     const [filters, setFilters] = useState({
         difficulty: '',
@@ -29,7 +35,6 @@ const ExerciseList = ({ user }) => {
         search: ''
     });
 
-    // Fetch exercises from API
     useEffect(() => {
         fetchExercises();
     }, []);
@@ -38,21 +43,26 @@ const ExerciseList = ({ user }) => {
         filterExercises();
     }, [filters, exercises]);
 
+    /* ================= FETCH ================= */
+
     const fetchExercises = async () => {
         try {
             setLoading(true);
-            const response = await getExercises({
-                page: 1,
-                limit: 50
-            });
+            setApiError(null);
+
+            const response = await getExercises({ page: 1, limit: 50 });
+
+            console.log('API Response:', response);
 
             if (response.success) {
-                setExercises(response.items);
-                setFilteredExercises(response.items);
+                setExercises(response.items || []);
+                setFilteredExercises(response.items || []);
+            } else {
+                setApiError(response.message || 'Failed to fetch exercises');
             }
         } catch (error) {
-            console.error('Error fetching exercises:', error);
-            alert('Không thể tải danh sách bài tập. Vui lòng thử lại!');
+            console.error('Fetch error:', error);
+            setApiError('Không thể kết nối tới server. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }
@@ -61,25 +71,74 @@ const ExerciseList = ({ user }) => {
     const filterExercises = () => {
         let filtered = [...exercises];
 
-        if (filters.difficulty) {
+        if (filters.difficulty)
             filtered = filtered.filter(ex => ex.difficulty === filters.difficulty);
-        }
 
-        if (filters.topic) {
+        if (filters.topic)
             filtered = filtered.filter(ex =>
                 ex.topic?.toLowerCase().includes(filters.topic.toLowerCase())
             );
-        }
 
         if (filters.search) {
-            const searchTerm = filters.search.toLowerCase();
+            const s = filters.search.toLowerCase();
             filtered = filtered.filter(ex =>
-                ex.title.toLowerCase().includes(searchTerm) ||
-                ex.topic?.toLowerCase().includes(searchTerm)
+                ex.title.toLowerCase().includes(s) ||
+                ex.topic?.toLowerCase().includes(s)
             );
         }
 
         setFilteredExercises(filtered);
+    };
+
+    /* ================= HANDLERS ================= */
+
+    const handlePractice = (exercise) => {
+        setSelectedExerciseForPractice(exercise);
+        setUserAnswers({});
+        setShowDetailModal(true);
+    };
+
+    const handleSubmitAnswers = async (answers, timeSpent) => {
+        try {
+            if (!selectedExerciseForPractice) return;
+
+            const response = await submitAnswers(
+                selectedExerciseForPractice._id,
+                answers,
+                timeSpent
+            );
+
+            if (response.success) {
+                setUserAnswers(answers);
+                setSubmitResult(response.data); 
+                setShowDetailModal(false);
+                setShowSubmitModal(true);
+            } else {
+                alert(response.message || 'Có lỗi khi nộp bài');
+            }
+        } catch (error) {
+            console.error('Submit error:', error);
+            alert('Có lỗi khi nộp bài');
+        }
+    };
+
+
+
+    const handleDelete = async (exerciseId) => {
+        if (!confirm('Bạn có chắc chắn muốn xóa bài tập này?')) return;
+
+        try {
+            const response = await deleteExercise(exerciseId);
+            if (response.success) {
+                setExercises(prev => prev.filter(ex => ex._id !== exerciseId));
+                toast.success("Xóa bài tập thành công.")
+            } else {
+                alert(response.message || 'Có lỗi khi xóa bài tập');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Có lỗi khi xóa bài tập');
+        }
     };
 
     const handleCreate = () => {
@@ -90,147 +149,102 @@ const ExerciseList = ({ user }) => {
 
     const handleUpdate = async (exercise) => {
         try {
-            // Fetch full exercise data with answers for editing
-            const response = await getExerciseById(exercise._id);
-            if (response.success) {
-                setSelectedExercise(response.data);
+            const res = await getExerciseById(exercise._id);
+            if (res.success) {
+                setSelectedExercise(res.data);
                 setMode('update');
                 setShowFormModal(true);
             }
         } catch (error) {
-            console.error('Error fetching exercise details:', error);
-            alert('Không thể tải chi tiết bài tập để chỉnh sửa');
-        }
-    };
-
-    const handleDelete = async (id) => {
-        if (window.confirm('Bạn có chắc muốn xóa bài tập này?')) {
-            try {
-                const response = await deleteExercise(id);
-                if (response.success) {
-                    setExercises(exercises.filter(ex => ex._id !== id));
-                    alert('Xóa bài tập thành công!');
-                }
-            } catch (error) {
-                console.error('Error deleting exercise:', error);
-                alert('Không thể xóa bài tập. Vui lòng thử lại!');
-            }
-        }
-    };
-
-    const handlePractice = async (exercise) => {
-        try {
-            // Fetch exercise details without answers
-            const response = await getExerciseById(exercise._id);
-            if (response.success) {
-                setSelectedExerciseForPractice(response.data);
-
-                // Initialize answers
-                const initialAnswers = {};
-                if (response.data.blanks) {
-                    response.data.blanks.forEach(blank => {
-                        initialAnswers[blank.position] = '';
-                    });
-                }
-                setUserAnswers(initialAnswers);
-                setShowDetailModal(true);
-            }
-        } catch (error) {
-            console.error('Error fetching exercise for practice:', error);
-            alert('Không thể tải bài tập để làm. Vui lòng thử lại!');
+            console.error(error);
+            alert('Không thể lấy thông tin bài tập');
         }
     };
 
     const handleSubmitForm = async (formData) => {
         try {
-            const formattedData = formatExerciseForApi(formData);
+            const payload = formatExerciseForApi(formData);
 
             if (mode === 'create') {
-                const response = await createExercise(formattedData);
-                if (response.success) {
-                    // Add new exercise to list
-                    const newExercise = {
-                        _id: response.exerciseId,
-                        ...formData,
-                        blanksCount: formData.blanks.length,
-                        createdAt: new Date().toISOString().split('T')[0]
-                    };
-                    setExercises([newExercise, ...exercises]);
-                    alert('Tạo bài tập thành công!');
+                const res = await createExercise(payload);
+                if (res.success) {
+                    setExercises(prev => [
+                        {
+                            _id: res.exerciseId,
+                            ...formData,
+                            blanksCount: formData.blanks?.length || 0,
+                            createdAt: new Date()
+                        },
+                        ...prev
+                    ]);
+                    setShowFormModal(false);
                 }
-            } else if (mode === 'update' && selectedExercise) {
-                const response = await updateExercise(selectedExercise._id, formattedData);
-                if (response.success) {
-                    // Update exercise in list
-                    const updatedExercises = exercises.map(ex =>
-                        ex._id === selectedExercise._id
-                            ? {
-                                ...ex,
-                                ...formData,
-                                blanksCount: formData.blanks.length,
-                                updatedAt: new Date().toISOString().split('T')[0]
-                            }
-                            : ex
+            }
+
+            if (mode === 'update' && selectedExercise) {
+                const res = await updateExercise(selectedExercise._id, payload);
+                if (res.success) {
+                    setExercises(prev =>
+                        prev.map(ex =>
+                            ex._id === selectedExercise._id
+                                ? { ...ex, ...payload }
+                                : ex
+                        )
                     );
-                    setExercises(updatedExercises);
-                    alert('Cập nhật bài tập thành công!');
+                    setShowFormModal(false);
                 }
             }
-            setShowFormModal(false);
         } catch (error) {
-            console.error('Error saving exercise:', error);
-            alert('Lỗi khi lưu bài tập. Vui lòng thử lại!');
+            console.error(error);
+            alert('Lỗi khi lưu bài tập');
         }
     };
 
-    const handleSubmitAnswers = async () => {
-        try {
-            if (!selectedExerciseForPractice) return;
+    /* ================= UI HELPERS ================= */
 
-            const formattedAnswers = formatAnswersForApi(userAnswers);
-            const response = await submitAnswers(
-                selectedExerciseForPractice._id,
-                formattedAnswers,
-                0 // timeSpent - bạn có thể tính thời gian thực tế
-            );
-
-            if (response.success) {
-                setShowDetailModal(false);
-                setShowSubmitModal(true);
-            }
-        } catch (error) {
-            console.error('Error submitting answers:', error);
-            alert('Lỗi khi nộp bài. Vui lòng thử lại!');
-        }
-    };
-
-    const getDifficultyColor = (level) => {
-        switch (level) {
+    const getDifficultyColor = (difficulty) => {
+        switch (difficulty) {
             case 'easy': return 'bg-green-100 text-green-800 border-green-200';
             case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             case 'hard': return 'bg-red-100 text-red-800 border-red-200';
-            default: return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
-    const getDifficultyText = (level) => {
-        switch (level) {
+    const getDifficultyText = (difficulty) => {
+        switch (difficulty) {
             case 'easy': return 'Dễ';
             case 'medium': return 'Trung bình';
             case 'hard': return 'Khó';
-            default: return 'Chưa xác định';
+            default: return 'Không xác định';
         }
     };
 
+    /* ================= RENDER ================= */
+
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center h-64 space-y-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <p className="text-gray-600">Đang tải bài tập...</p>
+            <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Đang tải bài tập...</p>
             </div>
         );
     }
 
+    if (apiError) {
+        return (
+            <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Lỗi tải dữ liệu</h3>
+                <p className="text-gray-600">{apiError}</p>
+                <button
+                    onClick={fetchExercises}
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                    Thử lại
+                </button>
+            </div>
+        );
+    }
     return (
         <div>
             {/* Filters */}
@@ -293,7 +307,7 @@ const ExerciseList = ({ user }) => {
                                 {user.role === 'admin' && (
                                     <button
                                         onClick={handleCreate}
-                                        className="flex-1 px-4 py-2 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition flex items-center justify-center"
+                                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
                                     >
                                         Tạo mới
                                     </button>
@@ -338,7 +352,7 @@ const ExerciseList = ({ user }) => {
                                     <button
                                         onClick={() => {
                                             const audio = new Audio(exercise.audioUrl);
-                                            audio.play();
+                                            audio.play().catch(e => console.error('Audio error:', e));
                                         }}
                                         className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded hover:bg-blue-200 transition"
                                     >
@@ -349,14 +363,14 @@ const ExerciseList = ({ user }) => {
 
                             <div className="mb-4">
                                 <div className="flex items-center text-sm text-gray-600 mb-2">
-                                    <span>{exercise.blanksCount} chỗ trống cần điền</span>
+                                    <span>{exercise.blanksCount || 0} chỗ trống cần điền</span>
                                 </div>
                             </div>
 
                             <div className="flex space-x-2">
                                 <button
                                     onClick={() => handlePractice(exercise)}
-                                    className="flex-1 px-4 py-2 bg-linear-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition flex items-center justify-center"
+                                    className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center justify-center"
                                 >
                                     Làm bài
                                 </button>
@@ -365,14 +379,14 @@ const ExerciseList = ({ user }) => {
                                     <>
                                         <button
                                             onClick={() => handleUpdate(exercise)}
-                                            className="px-4 py-2 bg-linear-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:from-yellow-600 hover:to-yellow-700 transition"
+                                            className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
                                             title="Chỉnh sửa"
                                         >
                                             Sửa
                                         </button>
                                         <button
                                             onClick={() => handleDelete(exercise._id)}
-                                            className="px-4 py-2 bg-linear-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition"
+                                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                                             title="Xóa"
                                         >
                                             Xóa
@@ -386,7 +400,7 @@ const ExerciseList = ({ user }) => {
             </div>
 
             {/* Empty State */}
-            {filteredExercises.length === 0 && (
+            {filteredExercises.length === 0 && !loading && (
                 <div className="text-center py-12">
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy bài tập</h3>
                     <p className="text-gray-600 mb-4">
@@ -397,7 +411,7 @@ const ExerciseList = ({ user }) => {
                     {user.role === 'admin' && (
                         <button
                             onClick={handleCreate}
-                            className="px-6 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition"
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                         >
                             Tạo Bài Tập Đầu Tiên
                         </button>
@@ -426,6 +440,7 @@ const ExerciseList = ({ user }) => {
                 onClose={() => setShowSubmitModal(false)}
                 exercise={selectedExerciseForPractice}
                 userAnswers={userAnswers}
+                result={submitResult}
             />
         </div>
     );

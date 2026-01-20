@@ -1,126 +1,161 @@
 import api from '../api/api';
-export const getExercises = async (params = {}) => {
-    try {
-        const response = await api.get('/listening', { params });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching exercises:', error);
-        throw error;
-    }
-}
-export const getExerciseById = async (id) => {
-    try {
-        const response = await api.get(`/listening/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching exercise:', error);
-        throw error;
-    }
-}
 
-export const createExercise = async (exerciseData) => {
-    try {
-        const response = await api.post('/listening', exerciseData);
-        return response.data;
-    } catch (error) {
-        console.error('Error creating exercise:', error);
-        throw error;
-    }
-}
-export const updateExercise = async (id, exerciseData) => {
-    try {
-        const response = await api.put(`/listening/${id}`, exerciseData);
-        return response.data;
-    } catch (error) {
-        console.error('Error updating exercise:', error);
-        throw error;
-    }
-}
-export const deleteExercise = async (id) => {
-    try {
-        const response = await api.delete(`/listening/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error deleting exercise:', error);
-        throw error;
-    }
-}
+/* =========================
+   FORMAT HELPERS
+========================= */
 
-export const uploadAudio = async (file) => {
-    try {
-        const formData = new FormData();
-        formData.append('audio', file);
-        const response = await api.post('/listening/upload-audio', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error uploading audio:', error);
-        throw error;
-    }
-}
+/**
+ * Format dữ liệu tạo / cập nhật bài nghe
+ */
+export const formatExerciseForApi = (formData = {}) => {
+    const payload = {};
 
-export const deleteAudio = async (filename) => {
-    try {
-        const response = await api.delete('/listening/delete-audio', {
-            data: { filename }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error deleting audio:', error);
-        throw error;
+    if (formData.title !== undefined)
+        payload.title = formData.title;
+
+    if (formData.audioUrl !== undefined)
+        payload.audioUrl = formData.audioUrl;
+
+    if (formData.transcript !== undefined)
+        payload.transcript = formData.transcript;
+
+    if (formData.difficulty !== undefined)
+        payload.difficulty = formData.difficulty;
+
+    if (formData.topic !== undefined)
+        payload.topic = formData.topic || null;
+
+    if (Array.isArray(formData.blanks)) {
+        payload.blanks = formData.blanks.map(b => ({
+            position: Number(b.position),
+            answer: b.answer?.trim(),
+            hint: b.hint || null
+        }));
     }
-}
-export const submitAnswers = async (exerciseId, answers, timeSpent = 0) => {
-    try {
-        const response = await api.post('/listening/submit', {
-            exerciseId,
-            answers,
-            timeSpent
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error submitting answers:', error);
-        throw error;
-    }
-}
-export const getStats = async () => {
-    try {
-        const response = await api.get('/listening/stats');
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching stats:', error);
-        throw error;
-    }
-}
-export const getHistory = async (params = {}) => {
-    try {
-        const response = await api.get('/listening/history', { params });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching history:', error);
-        throw error;
-    }
-}
-export const formatExerciseForApi = (formData) => {
-    return {
-        title: formData.title,
-        audioUrl: formData.audioUrl,
-        transcript: formData.transcript,
-        blanks: formData.blanks.map(blank => ({
-            position: parseInt(blank.position),
-            answer: blank.answer.trim(),
-            hint: blank.hint?.trim() || ''
-        })),
-        difficulty: formData.difficulty,
-        topic: formData.topic || ''
-    };
-}
-export const formatAnswersForApi = (userAnswers) => {
-    return Object.entries(userAnswers).map(([position, userAnswer]) => ({
-        position: parseInt(position),
-        userAnswer: userAnswer.trim()
+
+    return payload;
+};
+
+/**
+ * Format đáp án người dùng khi submit
+ */
+export const formatAnswersForApi = (userAnswers = {}) =>
+    Object.entries(userAnswers).map(([position, userAnswer]) => ({
+        position: Number(position),
+        userAnswer: userAnswer?.trim() || ''
     }));
-}
+
+
+/* =========================
+   LISTENING API
+========================= */
+
+/**
+ * GET /listening
+ * Lấy danh sách bài luyện nghe
+ */
+export const getExercises = async (params = {}) => {
+    const res = await api.get('/listening', { params });
+    return res.data;
+};
+
+/**
+ * GET /listening/:id
+ * Lấy chi tiết bài nghe (không có đáp án)
+ */
+export const getExerciseById = async (id) => {
+    const res = await api.get(`/listening/${id}`);
+    return res.data;
+};
+
+/**
+ * POST /listening (admin)
+ * Tạo bài luyện nghe
+ */
+export const createExercise = async (data) => {
+    const res = await api.post('/listening', data);
+    return res.data;
+};
+
+/**
+ * PUT /listening/:id (admin)
+ * Cập nhật bài luyện nghe
+ */
+export const updateExercise = async (id, data) => {
+    const res = await api.put(`/listening/${id}`, data);
+    return res.data;
+};
+
+/**
+ * DELETE /listening/:id (admin)
+ * Xóa bài luyện nghe
+ */
+export const deleteExercise = async (id) => {
+    const res = await api.delete(`/listening/${id}`);
+    return res.data;
+};
+
+/**
+ * POST /listening/submit
+ * Nộp bài và chấm điểm
+ */
+export const submitAnswers = async (exerciseId, answers, timeSpent = 0) => {
+    const formattedAnswers = Array.isArray(answers)
+        ? answers
+        : formatAnswersForApi(answers);
+
+    const res = await api.post('/listening/submit', {
+        exerciseId,
+        answers: formattedAnswers,
+        timeSpent: Math.round(timeSpent)
+    });
+
+    return res.data;
+};
+
+/**
+ * GET /listening/stats
+ * Thống kê kết quả người dùng
+ */
+export const getStats = async () => {
+    const res = await api.get('/listening/stats');
+    console.log("lich su", res.data)
+    return res.data;
+};
+
+/**
+ * GET /listening/history
+ * Lịch sử làm bài
+ */
+export const getHistory = async (params = {}) => {
+    const res = await api.get('/listening/history', { params });
+    console.log("History: ", res.data)
+    return res.data;
+};
+
+/**
+ * POST /listening/upload-audio (admin)
+ * Upload file audio
+ */
+export const uploadAudio = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await api.post('/listening/upload-audio', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    return res.data;
+};
+
+/**
+ * DELETE /listening/delete-audio (admin)
+ * Xóa file audio
+ */
+export const deleteAudio = async (filename) => {
+    const res = await api.delete('/listening/delete-audio', {
+        data: { filename }
+    });
+
+    return res.data;
+};

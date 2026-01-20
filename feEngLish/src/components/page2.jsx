@@ -24,43 +24,34 @@ const people = [
     role: "Designer",
     imageUrl: "/src/img/truong.webp",
   },
-  {
-    name: "Luong Thien Truong",
-    role: "Director of Product",
-    imageUrl: "/src/img/truong.webp",
-  },
 ];
 
 export default function Page2() {
   return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto grid max-w-7xl gap-20 px-6 lg:px-8 xl:grid-cols-3">
-        <div className="max-w-xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-4xl">
-            Meet our leadership
-          </h2>
-          <p className="mt-6 text-lg/8 text-gray-600">
-            We’re a dynamic group of individuals who are passionate about what
-            we do and dedicated to delivering the best results for our clients.
-          </p>
+    <>
+      {/* Title */}
+      <div className="mb-5">
+        <div className="mt-[50px] flex justify-center items-center">
+          <div className="text-gray-900 text-[20px] mt-5 mb-5">
+            Meet our team
+          </div>
         </div>
-        <ul
-          role="list"
-          className="grid gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2"
-        >
-          {people.map((person, index) => (
-            <li key={index}>
+
+        {/* Team list */}
+        <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-5 sm:gap-y-16">
+          {people.map((person) => (
+            <li key={person.name} className="flex justify-center">
               <div className="flex items-center gap-x-6">
                 <img
-                  alt=""
                   src={person.imageUrl}
-                  className="size-16 rounded-full outline-1 -outline-offset-1 outline-black/5"
+                  alt={person.name}
+                  className="size-16 rounded-full outline outline-1 -outline-offset-1 outline-black/5"
                 />
                 <div>
-                  <h3 className="text-base/7 font-semibold tracking-tight text-gray-900">
+                  <h3 className="text-base font-semibold tracking-tight text-gray-900">
                     {person.name}
                   </h3>
-                  <p className="text-sm/6 font-semibold text-indigo-600">
+                  <p className="text-sm font-semibold text-indigo-600">
                     {person.role}
                   </p>
                 </div>
@@ -69,6 +60,6 @@ export default function Page2() {
           ))}
         </ul>
       </div>
-    </div>
+    </>
   );
 }

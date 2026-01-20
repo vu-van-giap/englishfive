@@ -43,7 +43,6 @@ const ExerciseList = ({ user }) => {
         filterExercises();
     }, [filters, exercises]);
 
-    /* ================= FETCH ================= */
 
     const fetchExercises = async () => {
         try {
@@ -89,9 +88,6 @@ const ExerciseList = ({ user }) => {
 
         setFilteredExercises(filtered);
     };
-
-    /* ================= HANDLERS ================= */
-
     const handlePractice = (exercise) => {
         setSelectedExerciseForPractice(exercise);
         setUserAnswers({});
@@ -200,8 +196,6 @@ const ExerciseList = ({ user }) => {
         }
     };
 
-    /* ================= UI HELPERS ================= */
-
     const getDifficultyColor = (difficulty) => {
         switch (difficulty) {
             case 'easy': return 'bg-green-100 text-green-800 border-green-200';
@@ -219,9 +213,6 @@ const ExerciseList = ({ user }) => {
             default: return 'Không xác định';
         }
     };
-
-    /* ================= RENDER ================= */
-
     if (loading) {
         return (
             <div className="text-center py-12">

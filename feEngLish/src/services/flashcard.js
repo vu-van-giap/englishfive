@@ -9,8 +9,8 @@ const api = axios.create({
 });
 
 const flashcardService = {
-  // Lấy tất cả flashcards
-  getAllFlashcards: async (page = 1, limit = 20) => {
+  // Lấy tất cả flashcards (không giới hạn)
+  getAllFlashcards: async (page = 1, limit = 0) => {
     try {
       const response = await api.get(`/flashcard?page=${page}&limit=${limit}`);
       return response.data;
@@ -20,11 +20,22 @@ const flashcardService = {
     }
   },
 
-  // Tìm kiếm flashcards
-  searchFlashcards: async (query, page = 1, limit = 20) => {
+  // Lấy tất cả flashcards không phân trang (alternative)
+  getAllFlashcardsUnlimited: async () => {
+    try {
+      const response = await api.get(`/flashcard?limit=0`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching all flashcards:", error);
+      throw error;
+    }
+  },
+
+  // Tìm kiếm flashcards (không giới hạn)
+  searchFlashcards: async (query, page = 1, limit = 0) => {
     try {
       const response = await api.get(
-        `/flashcard/search?q=${query}&page=${page}&limit=${limit}`
+        `/flashcard/search?q=${query}&page=${page}&limit=${limit}`,
       );
       return response.data;
     } catch (error) {
@@ -33,15 +44,26 @@ const flashcardService = {
     }
   },
 
-  // Lấy flashcards theo topic
-  getFlashcardsByTopic: async (topic, page = 1, limit = 20) => {
+  // Lấy flashcards theo topic (không giới hạn)
+  getFlashcardsByTopic: async (topic, page = 1, limit = 0) => {
     try {
       const response = await api.get(
-        `/flashcard/topic/${topic}?page=${page}&limit=${limit}`
+        `/flashcard/topic/${topic}?page=${page}&limit=${limit}`,
       );
       return response.data;
     } catch (error) {
       console.error("Error fetching flashcards by topic:", error);
+      throw error;
+    }
+  },
+
+  // Lấy tất cả flashcards theo topic không phân trang
+  getAllFlashcardsByTopic: async (topic) => {
+    try {
+      const response = await api.get(`/flashcard/topic/${topic}?limit=0`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching all flashcards by topic:", error);
       throw error;
     }
   },

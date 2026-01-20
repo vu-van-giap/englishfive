@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { getTopics } from '../../services/vocabs'; // Thêm import service
+import React, { useState, useEffect } from "react";
+import { getTopics } from "../../services/vocabs"; // Thêm import service
 
-const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' }) => {
+const VocabModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  mode = "create",
+}) => {
   const [formData, setFormData] = useState({
-    word: '',
-    meaning: '',
-    pronunciation: '',
-    partOfSpeech: '',
-    examples: ['', ''],
-    topic: 'general',
-    level: 'A1',
-    tags: []
+    word: "",
+    meaning: "",
+    pronunciation: "",
+    partOfSpeech: "",
+    examples: ["", ""],
+    topic: "general",
+    level: "A1",
+    tags: [],
   });
 
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
   const [topics, setTopics] = useState([]); // Thêm state cho topics
   const [loadingTopics, setLoadingTopics] = useState(false); // Thêm loading state
 
@@ -31,24 +37,24 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
       const topicsData = await getTopics();
       setTopics(topicsData);
     } catch (error) {
-      console.error('Error loading topics:', error);
+      console.error("Error loading topics:", error);
       // Fallback topics nếu API fail
       setTopics([
-        { value: 'general', label: 'Chung / Cơ bản', emoji: '📚' },
-        { value: 'family', label: 'Gia đình', emoji: '👨‍👩‍👧‍👦' },
-        { value: 'food', label: 'Ẩm thực', emoji: '🍔' },
-        { value: 'travel', label: 'Du lịch', emoji: '✈️' },
-        { value: 'work', label: 'Công việc', emoji: '💼' },
-        { value: 'education', label: 'Học tập', emoji: '🎓' },
-        { value: 'health', label: 'Sức khỏe', emoji: '🏥' },
-        { value: 'nature', label: 'Thiên nhiên', emoji: '🌳' },
-        { value: 'animals', label: 'Động vật', emoji: '🐘' },
-        { value: 'technology', label: 'Công nghệ', emoji: '💻' },
-        { value: 'sports', label: 'Thể thao', emoji: '⚽' },
-        { value: 'shopping', label: 'Mua sắm', emoji: '🛍️' },
-        { value: 'weather', label: 'Thời tiết', emoji: '☀️' },
-        { value: 'emotions', label: 'Cảm xúc', emoji: '😊' },
-        { value: 'home', label: 'Nhà cửa', emoji: '🏠' }
+        { value: "general", label: "Chung / Cơ bản", emoji: "📚" },
+        { value: "family", label: "Gia đình", emoji: "👨‍👩‍👧‍👦" },
+        { value: "food", label: "Ẩm thực", emoji: "🍔" },
+        { value: "travel", label: "Du lịch", emoji: "✈️" },
+        { value: "work", label: "Công việc", emoji: "💼" },
+        { value: "education", label: "Học tập", emoji: "🎓" },
+        { value: "health", label: "Sức khỏe", emoji: "🏥" },
+        { value: "nature", label: "Thiên nhiên", emoji: "🌳" },
+        { value: "animals", label: "Động vật", emoji: "🐘" },
+        { value: "technology", label: "Công nghệ", emoji: "💻" },
+        { value: "sports", label: "Thể thao", emoji: "⚽" },
+        { value: "shopping", label: "Mua sắm", emoji: "🛍️" },
+        { value: "weather", label: "Thời tiết", emoji: "☀️" },
+        { value: "emotions", label: "Cảm xúc", emoji: "😊" },
+        { value: "home", label: "Nhà cửa", emoji: "🏠" },
       ]);
     } finally {
       setLoadingTopics(false);
@@ -59,14 +65,16 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
   useEffect(() => {
     if (initialData) {
       setFormData({
-        word: initialData.word || '',
-        meaning: initialData.meaning || '',
-        pronunciation: initialData.pronunciation || '',
-        partOfSpeech: initialData.partOfSpeech || '',
-        examples: initialData.examples?.length ? [...initialData.examples, ''] : ['', ''],
-        topic: initialData.topic || 'general',
-        level: initialData.level || 'A1',
-        tags: initialData.tags || []
+        word: initialData.word || "",
+        meaning: initialData.meaning || "",
+        pronunciation: initialData.pronunciation || "",
+        partOfSpeech: initialData.partOfSpeech || "",
+        examples: initialData.examples?.length
+          ? [...initialData.examples, ""]
+          : ["", ""],
+        topic: initialData.topic || "general",
+        level: initialData.level || "A1",
+        tags: initialData.tags || [],
       });
     }
   }, [initialData]);
@@ -75,43 +83,43 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleExampleChange = (index, value) => {
     const newExamples = [...formData.examples];
     newExamples[index] = value;
-    setFormData(prev => ({ ...prev, examples: newExamples }));
+    setFormData((prev) => ({ ...prev, examples: newExamples }));
   };
 
   const addExample = () => {
-    setFormData(prev => ({ ...prev, examples: [...prev.examples, ''] }));
+    setFormData((prev) => ({ ...prev, examples: [...prev.examples, ""] }));
   };
 
   const removeExample = (index) => {
     const newExamples = formData.examples.filter((_, i) => i !== index);
-    setFormData(prev => ({ ...prev, examples: newExamples }));
+    setFormData((prev) => ({ ...prev, examples: newExamples }));
   };
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData(prev => ({ 
-        ...prev, 
-        tags: [...prev.tags, tagInput.trim()] 
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tagInput.trim()],
       }));
-      setTagInput('');
+      setTagInput("");
     }
   };
 
   const handleRemoveTag = (tagToRemove) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
+    if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
       handleAddTag();
     }
@@ -119,33 +127,40 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Lọc bỏ các ví dụ trống
-    const filteredExamples = formData.examples.filter(ex => ex.trim() !== '');
-    
+    const filteredExamples = formData.examples.filter((ex) => ex.trim() !== "");
+
     const submitData = {
       ...formData,
-      examples: filteredExamples
+      examples: filteredExamples,
     };
 
     onSubmit(submitData);
   };
 
   const partOfSpeechOptions = [
-    'noun', 'verb', 'adjective', 'adverb', 'preposition', 
-    'conjunction', 'interjection', 'pronoun', 'determiner'
+    "noun",
+    "verb",
+    "adjective",
+    "adverb",
+    "preposition",
+    "conjunction",
+    "interjection",
+    "pronoun",
+    "determiner",
   ];
 
-  const levelOptions = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'other'];
+  const levelOptions = ["A1", "A2", "B1", "B2", "C1", "C2", "other"];
 
   return (
     <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">
-            {mode === 'edit' ? 'Chỉnh sửa từ vựng' : 'Thêm từ vựng mới'}
+            {mode === "edit" ? "Chỉnh sửa từ vựng" : "Thêm từ vựng mới"}
           </h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl"
           >
@@ -214,8 +229,10 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Chọn từ loại</option>
-                {partOfSpeechOptions.map(pos => (
-                  <option key={pos} value={pos}>{pos}</option>
+                {partOfSpeechOptions.map((pos) => (
+                  <option key={pos} value={pos}>
+                    {pos}
+                  </option>
                 ))}
               </select>
             </div>
@@ -228,7 +245,9 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
               {loadingTopics ? (
                 <div className="flex items-center gap-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
-                  <span className="text-sm text-gray-500">Đang tải chủ đề...</span>
+                  <span className="text-sm text-gray-500">
+                    Đang tải chủ đề...
+                  </span>
                 </div>
               ) : (
                 <select
@@ -237,7 +256,7 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  {topics.map(topic => (
+                  {topics.map((topic) => (
                     <option key={topic.value} value={topic.value}>
                       {topic.emoji} {topic.label}
                     </option>
@@ -257,8 +276,10 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {levelOptions.map(level => (
-                  <option key={level} value={level}>{level}</option>
+                {levelOptions.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
                 ))}
               </select>
             </div>
@@ -277,7 +298,7 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Nhập tag và nhấn Enter"
                 />
-                <button 
+                <button
                   type="button"
                   onClick={handleAddTag}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -287,12 +308,12 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.tags.map((tag, index) => (
-                  <span 
+                  <span
                     key={index}
                     className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
                   >
                     {tag}
-                    <button 
+                    <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
                       className="text-blue-600 hover:text-blue-800"
@@ -315,12 +336,14 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
                     <input
                       type="text"
                       value={example}
-                      onChange={(e) => handleExampleChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleExampleChange(index, e.target.value)
+                      }
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder={`Ví dụ ${index + 1}`}
                     />
                     {formData.examples.length > 1 && (
-                      <button 
+                      <button
                         type="button"
                         onClick={() => removeExample(index)}
                         className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
@@ -331,7 +354,7 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
                   </div>
                 ))}
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={addExample}
                 className="px-4 py-2 border border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-gray-400 hover:text-gray-800"
@@ -353,7 +376,7 @@ const VocabModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'create' })
               type="submit"
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium"
             >
-              {mode === 'edit' ? 'Cập nhật' : 'Thêm mới'}
+              {mode === "edit" ? "Cập nhật" : "Thêm mới"}
             </button>
           </div>
         </form>

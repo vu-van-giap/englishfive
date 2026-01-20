@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getTopics } from '../../services/vocabs';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getTopics } from "../../services/vocabs";
 
 const TopicGrid = () => {
   const navigate = useNavigate();
@@ -15,10 +15,10 @@ const TopicGrid = () => {
     try {
       setLoading(true);
       const data = await getTopics();
-      console.log('Topics data:', data);
+      console.log("Topics data:", data);
       setTopics(data);
     } catch (error) {
-      console.error('Error loading topics:', error);
+      console.error("Error loading topics:", error);
     } finally {
       setLoading(false);
     }
@@ -44,21 +44,17 @@ const TopicGrid = () => {
           className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
           onClick={() => handleTopicClick(topic)}
         >
-          {/* Background image */}
           <div
             className="h-32 w-full bg-cover bg-center"
             style={{ backgroundImage: `url("${topic.imageUrl}")` }}
           />
 
-          {/* Label + Emoji + Button */}
           <div className="p-4 flex flex-col items-center">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-3xl">{topic.emoji}</span>
               <h3 className="font-semibold text-gray-800">{topic.label}</h3>
             </div>
-            <button
-              className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded-lg text-sm font-medium transition-colors"
-            >
+            <button className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded-lg text-sm font-medium transition-colors">
               Xem từ vựng →
             </button>
           </div>

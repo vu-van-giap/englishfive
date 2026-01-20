@@ -6,6 +6,8 @@ import { getAllUser, deleteUser } from "../services/user";
 import { toast } from "react-toastify";
 const ListUser = () => {
   const [listuser, setListUser] = useState([]);
+  const [isUser, setIsUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [mode, setMode] = useState("add");
@@ -95,7 +97,7 @@ const ListUser = () => {
             <div>
               <div>
                 <p>Tổng số người dùng</p>
-                <p>4</p>
+                <p>{listuser.length}</p>
               </div>
               <div>
                 <svg
@@ -117,7 +119,7 @@ const ListUser = () => {
             <div>
               <div>
                 <p>Admin</p>
-                <p>5</p>
+                <p>{listuser.filter((user) => user.role === "admin").length}</p>
               </div>
               <div>
                 <svg
@@ -139,7 +141,7 @@ const ListUser = () => {
             <div>
               <div>
                 <p>User</p>
-                <p>6</p>
+                <p>{listuser.filter((user) => user.role === "user").length}</p>
               </div>
               <div>
                 <svg

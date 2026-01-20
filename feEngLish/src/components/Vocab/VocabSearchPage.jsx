@@ -190,7 +190,7 @@ const VocabSearchPage = () => {
     const topic = topics.find((t) => t.value === topicValue);
     return topic ? topic.label : topicValue;
   };
-
+  const role = localStorage.getItem("role");
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
@@ -205,13 +205,15 @@ const VocabSearchPage = () => {
           <h1 className="text-3xl font-bold text-gray-800">Tìm kiếm từ vựng</h1>
           <p className="text-gray-600 mt-2">Tìm kiếm và quản lý từ vựng</p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="mt-4 md:mt-0 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2"
-        >
-          <span>+</span>
-          <span>Thêm từ mới</span>
-        </button>
+        {role === "admin" ? (
+          <button
+            onClick={handleCreate}
+            className="mt-4 md:mt-0 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+          >
+            <span>+</span>
+            <span>Thêm từ mới</span>
+          </button>
+        ) : null}
       </div>
 
       {/* Search and Filters */}
